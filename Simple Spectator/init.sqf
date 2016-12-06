@@ -1,0 +1,1 @@
+call compile preprocessfilelinenumbers "cupspec\cupspec_init.sqf";

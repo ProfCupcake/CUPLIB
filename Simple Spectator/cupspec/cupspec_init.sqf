@@ -1,0 +1,12 @@
+if (isDedicated) exitWith {};
+
+CUPSPEC_actionColour = "#ffb000";
+CUPSPEC_modeList = ["INTERNAL", "EXTERNAL"];
+
+waitUntil {player == player};
+
+call compile preprocessfilelinenumbers "cupspec\cupspec_funcs.sqf";
+disableSerialization;
+//"CUPSPEC_control" addPublicVariableEventHandler [CUPSPEC_controlEH];
+waituntil {!(IsNull (findDisplay 46))};
+(findDisplay 46) displayAddEventHandler ["keyUp", "_this call CUPSPEC_inputEH;"];

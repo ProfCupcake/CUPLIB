@@ -1,6 +1,4 @@
-DEAD SIMPLE TRACKER MARKER SCRIPT
-By Professor Cupcake
----------------------------------
+# Dead Simple Tracker Marker Script
 
 This script provides an easy solution to tracking units via regularly (but not necessarily often) updating markers. 
 
@@ -8,21 +6,17 @@ The markers are in the form of a dot, with a trailing line. The line extends fro
 
 The markers will be automatically corrected to account for respawns, however they will not remove themselves from units that have died - you'll have to do that yourself if you want that to happen. 
 
-------------
-INSTALLATION
-------------
+# Installation
 
 Add it to your mission by copying the "cuptrack" folder into your mission folder, and adding the following to your init.sqf:
 
-call compile preprocessfilelinenumbers "cuptrack\cuptrack_init.sqf";
+`call compile preprocessfilelinenumbers "cuptrack\cuptrack_init.sqf";`
 
-------------
-ADDING A TRACKER MARKER
-------------
+# Adding a Tracker Marker
 
 The following function will add a tracker marker to a unit:-
 
-[target, text, colour, width] call CUPTRACK_addTrack;
+`[target, text, colour, width] call CUPTRACK_addTrack;`
 
 The "target" parameter is the unit to be tracked. It is the only required parameter. 
 The "text" parameter defines the text to be displayed on the marker, or lack thereof, if you set it to an empty string. Defaults to nothing.
@@ -31,10 +25,8 @@ The "width" parameter defines the width of the line following the dot. This is i
 
 Trying to add multiple tracker markers to the same unit won't work - the new track's marks will just replace the old one. It will still make a new entry though, which will make removing the mark rather annoying. 
 
-------------
-REMOVING A TRACKER MARKER
-------------
+# Removing a Tracker Marker
 
 The following function will remove a tracker marker from a unit:-
 
-target call CUPTRACK_removeTrack;
+`target call CUPTRACK_removeTrack;`

@@ -17,7 +17,7 @@ by Professor Cupcake
 
 _unit = _this select 0;
 _pos = _this select 1;
-if (size _this < 3) then {_dist = 25;} else {_dist = _this select 2;};
+if (count _this < 3) then {_dist = 25;} else {_dist = _this select 2;};
 
 //Generate array of displacements
 //Format: [[unit, disp], [unit, disp],...]

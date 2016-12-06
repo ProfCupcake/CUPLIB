@@ -15,7 +15,9 @@ Add it to your mission by copying the "cupspec" folder into your mission folder,
 The controls are relative to your keybinds. 
 
 *Move left - Switch to previous target
+
 *Move right - Switch to next target
+
 *Reload - Stop spectating
 
 ## Initiating Spectator

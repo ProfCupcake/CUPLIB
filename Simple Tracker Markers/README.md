@@ -6,13 +6,13 @@ The markers are in the form of a dot, with a trailing line. The line extends fro
 
 The markers will be automatically corrected to account for respawns, however they will not remove themselves from units that have died - you'll have to do that yourself if you want that to happen. 
 
-# Installation
+## Installation
 
 Add it to your mission by copying the "cuptrack" folder into your mission folder, and adding the following to your init.sqf:
 
 `call compile preprocessfilelinenumbers "cuptrack\cuptrack_init.sqf";`
 
-# Adding a Tracker Marker
+## Adding a Tracker Marker
 
 The following function will add a tracker marker to a unit:-
 
@@ -25,7 +25,7 @@ The "width" parameter defines the width of the line following the dot. This is i
 
 Trying to add multiple tracker markers to the same unit won't work - the new track's marks will just replace the old one. It will still make a new entry though, which will make removing the mark rather annoying. 
 
-# Removing a Tracker Marker
+## Removing a Tracker Marker
 
 The following function will remove a tracker marker from a unit:-
 

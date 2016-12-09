@@ -1,7 +1,8 @@
 if (isDedicated) exitWith {};
 
 CUPSPEC_actionColour = "#ffb000";
-CUPSPEC_modeList = ["INTERNAL", "EXTERNAL"];
+
+CUPSPEC_customCondition = _this;
 
 waitUntil {player == player};
 

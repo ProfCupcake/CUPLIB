@@ -1,7 +1,9 @@
 CUPSPEC_addSpectateObject = 
 {
-  //title, script, arguments, priority, showWindow, hideOnUse, shortcut, condition
-  _this select 0 addAction [format ["<t color='%1'>Begin Spectating</t>", CUPSPEC_actionColour], "cupspec\actions\spectateFromObject.sqf", _this select 1, 5, true, true, "", "true"];
+  _range = 25;
+	if (count _this >= 2) then {_range = _this select 1;};
+	//title, script, arguments, priority, showWindow, hideOnUse, shortcut, condition
+  _this select 0 addAction [format ["<t color='%1'>Begin Spectating</t>", CUPSPEC_actionColour], "cupspec\actions\spectateFromObject.sqf", _range, 5, true, true, "", "true"];
 };
 
 CUPSPEC_spectateFromObject = 
@@ -28,15 +30,21 @@ CUPSPEC_stopSpectating =
   systemchat "Spectation ended";
 };
 
+CUPSPEC_generateList = 
+{
+	_list = allPlayers - entities "HeadlessClient_F"; //Remove headless client(s), if any
+  _list = _list - [player]; //Remove the local player
+  {
+    if !(alive _x) then {_list = _list - [_x];}; //Remove dead players
+    if !(isNil {_x getVariable "CUPSPEC_spectating"}) then {_list = _list - [_x];}; //Remove players who are also spectating
+		if !(_x call CUPSPEC_customCondition) then {_list = _list - [_x];}; //Remove players that do not satisfy the custom condition
+  } forEach _list;
+	_list
+};
+
 CUPSPEC_switchTarget = 
 {
-  _playerlist = allPlayers - entities "HeadlessClient_F"; //Remove headless client(s), if any
-  _playerList = _playerList - [player]; //Remove the local player
-  {
-    if !(alive _x) then {_playerList = _playerList - [_x];};
-    if !(isNil {_x getVariable "CUPSPEC_spectating"}) then {_playerList = _playerList - [_x];};
-  } forEach _playerList; //Remove dead players & players who are also spectating
-  if (count _playerlist == 0) exitWith {hint "Cannot spectate: No targets available";};
+  _playerlist = 0 call CUPSPEC_generateList;
   {
     if (isNil {CUPSPEC_spectating}) exitWith
     {

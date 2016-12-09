@@ -1,10 +1,14 @@
 /*
 Script to generate a random position, within the bounds of a marker. 
+Supports any marker type*, size and orientation. 
 
 Input: marker name. 
 Output: position, technically in 3D form, but the z-coord is always 0.
 
 position = "markerName" call compile preprocessfilelinenumbers "randomPosInMarker.sqf";
+
+
+*except POLYLINE (hand-drawn lines), as they cannot be interacted with via scripts (yet)
 
 by Professor Cupcake
 */

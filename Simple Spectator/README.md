@@ -10,8 +10,6 @@ It is first-person only. You will see whatever the person you're spectating sees
 	* upon death (can be permanent or temporary)
 	* arbitrarily callable function
 * Handling situations
-	* Spectator target dies
-		* Run switch target function? That should handle everything just fine. 
 	* I think that's basically the only situation that needs to be handled... right? Right? Right. 
 * View modes
 	* Standard third-person (Might be possible already - test this)

@@ -45,6 +45,7 @@ CUPSPEC_generateList =
 CUPSPEC_switchTarget = 
 {
 	_playerlist = 0 call CUPSPEC_generateList;
+	if (CUPSPEC_spectating == CUPSPEC_spectating) then {CUPSPEC_spectating removeMPEventHandler ["MPKilled", CUPSPEC_targetKilledEH_index];};
 	{
 		if (isNil {CUPSPEC_spectating}) exitWith
 		{
@@ -73,6 +74,7 @@ CUPSPEC_switchTarget =
 			};
 		};
 	} forEach _playerlist;
+	CUPSPEC_targetKilledEH_index = CUPSPEC_spectating addMPEventHandler ["MPKilled", {call CUPSPEC_targetKilledEH;}];
 	player setVariable ["CUPSPEC_spectating", CUPSPEC_spectating, true];
 	CUPSPEC_spectating switchCamera CUPSPEC_mode;
 	player enableSimulation false; 
@@ -94,3 +96,12 @@ CUPSPEC_inputEH =
 	};
 	_return
 };
+
+CUPSPEC_targetKilledEH = 
+{
+	if (_this select 0 == CUPSPEC_spectating) then
+	{
+		systemchat format ["Target '%1' was killed.", name CUPSPEC_spectating];
+		1 spawn CUPSPEC_switchTarget;
+	}
+}

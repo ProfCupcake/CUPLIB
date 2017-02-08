@@ -1,1 +1,1 @@
-call compile preprocessfilelinenumbers "cupspec\cupspec_init.sqf";
+{true} call compile preprocessfilelinenumbers "cupspec\cupspec_init.sqf";

@@ -44,36 +44,41 @@ CUPSPEC_generateList =
 
 CUPSPEC_switchTarget = 
 {
-	_playerlist = 0 call CUPSPEC_generateList;
+	_playerList = 0 call CUPSPEC_generateList;
+	if (count _playerList < 1) exitWith
+	{
+		systemchat "Could not find a spectator target.";
+		if (CUPSPEC_spectating == CUPSPEC_spectating) then {[] spawn CUPSPEC_stopSpectating;};
+	}
 	if (CUPSPEC_spectating == CUPSPEC_spectating) then {CUPSPEC_spectating removeMPEventHandler ["MPKilled", CUPSPEC_targetKilledEH_index];};
 	{
 		if (isNil {CUPSPEC_spectating}) exitWith
 		{
-			CUPSPEC_spectating = _playerlist select 0;
+			CUPSPEC_spectating = _playerList select 0;
 			CUPSPEC_mode = CUPSPEC_modeList select 0;
 			CUPSPEC_index = 0;
 			hint "To switch target, press your Move Right or Move Left key. \nTo stop spectating, press your Reload key.";
 		};
 		if (_x == CUPSPEC_spectating) exitWith
 		{
-			if ((_forEachIndex + _this) == count _playerlist) then
+			if ((_forEachIndex + _this) == count _playerList) then
 			{
-				CUPSPEC_spectating = _playerlist select 0;
+				CUPSPEC_spectating = _playerList select 0;
 				CUPSPEC_index = 0;
 			} else
 			{
 				if ((_forEachIndex + _this) == -1) then
 				{
-					CUPSPEC_spectating = _playerlist select ((count _playerList) - 1);
+					CUPSPEC_spectating = _playerList select ((count _playerList) - 1);
 					CUPSPEC_index = count _playerList - 1;
 				} else
 				{
-					CUPSPEC_spectating = _playerlist select (_forEachIndex + _this);
+					CUPSPEC_spectating = _playerList select (_forEachIndex + _this);
 					CUPSPEC_index = _forEachIndex + _this;
 				};
 			};
 		};
-	} forEach _playerlist;
+	} forEach _playerList;
 	CUPSPEC_targetKilledEH_index = CUPSPEC_spectating addMPEventHandler ["MPKilled", {call CUPSPEC_targetKilledEH;}];
 	player setVariable ["CUPSPEC_spectating", CUPSPEC_spectating, true];
 	CUPSPEC_spectating switchCamera CUPSPEC_mode;

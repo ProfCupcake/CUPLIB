@@ -49,7 +49,7 @@ CUPSPEC_switchTarget =
 	{
 		systemchat "Could not find a spectator target.";
 		if (CUPSPEC_spectating == CUPSPEC_spectating) then {[] spawn CUPSPEC_stopSpectating;};
-	}
+	};
 	if (CUPSPEC_spectating == CUPSPEC_spectating) then {CUPSPEC_spectating removeMPEventHandler ["MPKilled", CUPSPEC_targetKilledEH_index];};
 	{
 		if (isNil {CUPSPEC_spectating}) exitWith
@@ -108,5 +108,5 @@ CUPSPEC_targetKilledEH =
 	{
 		systemchat format ["Target '%1' was killed.", name CUPSPEC_spectating];
 		1 spawn CUPSPEC_switchTarget;
-	}
-}
+	};
+};

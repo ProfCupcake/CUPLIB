@@ -48,14 +48,13 @@ CUPSPEC_switchTarget =
 	if (count _playerList < 1) exitWith
 	{
 		systemchat "Could not find a spectator target.";
-		if (CUPSPEC_spectating == CUPSPEC_spectating) then {[] spawn CUPSPEC_stopSpectating;};
+		if (!(isNil {CUPSPEC_spectating})) then {[] spawn CUPSPEC_stopSpectating;};
 	};
-	if (CUPSPEC_spectating == CUPSPEC_spectating) then {CUPSPEC_spectating removeMPEventHandler ["MPKilled", CUPSPEC_targetKilledEH_index];};
+	if (!(isNil {CUPSPEC_spectating})) then {CUPSPEC_spectating removeMPEventHandler ["MPKilled", CUPSPEC_targetKilledEH_index];};
 	{
 		if (isNil {CUPSPEC_spectating}) exitWith
 		{
 			CUPSPEC_spectating = _playerList select 0;
-			CUPSPEC_mode = CUPSPEC_modeList select 0;
 			CUPSPEC_index = 0;
 			hint "To switch target, press your Move Right or Move Left key. \nTo stop spectating, press your Reload key.";
 		};
@@ -81,7 +80,7 @@ CUPSPEC_switchTarget =
 	} forEach _playerList;
 	CUPSPEC_targetKilledEH_index = CUPSPEC_spectating addMPEventHandler ["MPKilled", {call CUPSPEC_targetKilledEH;}];
 	player setVariable ["CUPSPEC_spectating", CUPSPEC_spectating, true];
-	CUPSPEC_spectating switchCamera CUPSPEC_mode;
+	switchCamera CUPSPEC_spectating;
 	player enableSimulation false; 
 	systemchat format ["Now spectating '%1' (%2/%3)", name CUPSPEC_spectating, CUPSPEC_index + 1, count _playerList];
 };
@@ -90,7 +89,7 @@ CUPSPEC_inputEH =
 {
 	//hint "EH";
 	_return = false;
-	if (CUPSPEC_spectating == CUPSPEC_spectating) then
+	if (!(isNil {CUPSPEC_spectating})) then
 	{
 		//hint "EHpi";
 		_keycode = _this select 1;

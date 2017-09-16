@@ -31,7 +31,7 @@ else
 	_size = markerSize _this;
 	_dispVector = [(_dispVector select 0)*(_size select 0), (_dispVector select 1)*(_size select 1)]; //Scale to size of marker
 	_angle = -(markerDir _this);
-	//Rotate (via matrix/vector rotation) to fit marker
+	//Rotate to fit marker
 	//Also adds the z-coord (0)
 	_dispVector = [((cos _angle)*(_dispVector select 0)) - ((sin _angle)*(_dispVector select 1)), ((sin _angle)*(_dispVector select 0)) + ((cos _angle)*(_dispVector select 1)),0];
 	

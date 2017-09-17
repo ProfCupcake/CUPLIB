@@ -13,7 +13,7 @@ by Professor Cupcake
 **/
 
 _inputString = _this select 0;
-_desiredLength = _this select 1;
+_length = _this select 1;
 
 _outputArray = [_inputString];
 
@@ -21,7 +21,7 @@ while {count (_outputArray select (count _outputArray - 1)) > _length} do
 {
 	_curString = _outputArray select (count _outputArray - 1);
 	_newStringShort = _curString select [0, _length];
-	_newStringLong = _curString select [_length-1];
+	_newStringLong = _curString select [_length];
 	_outputArray set [count _outputArray - 1, _newStringShort];
 	_outputArray pushBack _newStringLong;
 };

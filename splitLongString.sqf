@@ -7,7 +7,7 @@ Input: Array:
 
 Output: Array of strings, of the desired length (or less).
 
-[string, length] execVM "splitLongString.sqf";
+[string, length] call compile preprocessfilelinenumbers "splitLongString.sqf";
 
 by Professor Cupcake
 **/

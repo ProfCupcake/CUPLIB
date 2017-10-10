@@ -15,6 +15,8 @@ by Professor Cupcake
 
 if !(_this isKindOf "Man") exitWith {false};
 
+if (currentMuzzle _this != currentWeapon _this) exitWith {false}; //If alternate muzzle (e.g. grenade launcher, the Type-115's underslung .50), assume it's not suppressed
+
 _primaryWeapons = [
 	"srifle_DMR_04_F",
 	"srifle_DMR_04_Tan_F",

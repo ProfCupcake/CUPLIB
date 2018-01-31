@@ -28,6 +28,15 @@ _checkArsenalDistance =
 	_return
 };
 
-_arsenalAction = player addAction ["Virtual Arsenal", {["Open",true] spawn BIS_fnc_arsenal},nil,1.5,true,true,"","call _checkArsenalDistance"];
+_arsenalActionParams = ["Virtual Arsenal", {["Open",true] spawn BIS_fnc_arsenal},nil,1.5,true,true,"","call _checkArsenalDistance"];
+_arsenalAction = player addAction _arsenalActionParams;
 player addEventHandler ["Killed", {player removeAction _arsenalAction;}];
-player addEventHandler ["Respawn", {_arsenalAction = player addAction ["Virtual Arsenal", {["Open",true] spawn BIS_fnc_arsenal},nil,1.5,true,true,"","call _checkArsenalDistance"];}];
+player addEventHandler ["Respawn", {_arsenalAction = player addAction _arsenalActionParams;}];
+
+if !(isNil "ace_arsenal_fnc_openBox") then
+{
+	_aceArsenalActionParams = ["ACE Arsenal", {[player, player, true] spawn ace_arsenal_fnc_openBox;}, nil, 1.5, true, true, "", "call _checkArsenalDistance"];
+	_aceArsenalAction = player addAction _aceArsenalActionParams;
+	player addEventHandler ["Killed", {player removeAction _aceArsenalAction;}];
+	player addEventHandler ["Respawn", {_aceArsenalAction = player addAction _aceArsenalActionParams;}];
+};

@@ -9,6 +9,10 @@ Specifically, it provides the option to load the saved loadout when the player c
 * Function to add save/load actions to objects
 * Handler for mission end
 
+## POSSIBLE ISSUES
+
+* like a whole bunch, I haven't been able to test this yet :|
+
 ## Installation
 
 This script requires [iniDBI2](https://github.com/code34/inidbi2) to be runnning on the server/host. 

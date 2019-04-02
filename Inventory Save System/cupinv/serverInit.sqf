@@ -76,5 +76,13 @@ disconnectHandler =
 };
 if (_saveOnQuit) then {addMissionEventHandler ["HandleDisconnect", disconnectHandler];};
 
+forceSaveHandler = 
+{
+	{
+		[nil, _x] call saveRequestHandler;
+	} foreach allPlayers;
+};
+"forceSave" addPublicVariableEventHandler forceSaveHandler;
+
 serverReady = true;
 publicVariable "serverReady";

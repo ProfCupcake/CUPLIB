@@ -78,9 +78,10 @@ if (_saveOnQuit) then {addMissionEventHandler ["HandleDisconnect", disconnectHan
 
 forceSaveHandler = 
 {
+	_players = allPlayers - entities "HeadlessClient_F";
 	{
 		[nil, _x] call saveRequestHandler;
-	} foreach allPlayers;
+	} foreach _players;
 };
 "forceSave" addPublicVariableEventHandler forceSaveHandler;
 

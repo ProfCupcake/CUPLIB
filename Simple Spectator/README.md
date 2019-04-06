@@ -9,8 +9,6 @@ It is first-person only. You will see whatever the person you're spectating sees
 * Alternate Initiations
 	* upon death (can be permanent or temporary)
 	* arbitrarily callable function
-* Handling situations
-	* I think that's basically the only situation that needs to be handled... right? Right? Right. 
 * View modes
 	* Standard third-person (Might be possible already - test this)
 	* Scripted third-person (to override difficulty setting restrictions)

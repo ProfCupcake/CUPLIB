@@ -11,7 +11,7 @@ invExport = compile preprocessfilelinenumbers "cupinv\invExport.sqf";
 
 invRequestHandler = 
 {
-	_player = _this select 1;
+	params ["_", "_player"];
 	_invSend = ["read", [getPlayerUID _player, "inv", ""]] call invDB;
 	if (_invSend == "") exitWith {"Inventory load failed." remoteExec ["hint", owner _player];};
 	if (count _invSend > 2732) then
@@ -34,7 +34,7 @@ invRequestHandler =
 
 saveRequestHandler = 
 {
-	_player = _this select 1; //Get player from publicVariable call
+	params ["_", "_player"];
 	_invSave = [_player, "script", false] call invExport;
 	if (count _invSave > 2048) then //Handle oversized loadout string
 	{
@@ -54,9 +54,9 @@ saveRequestHandler =
 };
 "saveRequest" addPublicVariableEventHandler saveRequestHandler;
 
-disconnectHandler = 
+disconnectSaveHandler = 
 {
-	_player = _this select 0;
+	params ["_player", "_", "_uid"];
 	_invSave = [_player, "script", false] call invExport;
 	if (count _invSave > 2048) then 
 	{
@@ -70,11 +70,11 @@ disconnectHandler =
 	{
 		_invSave = ["encodeBase64", _invSave] call invDB;
 	};
-	_saveSuccess = ["write", [_this select 2 "inv", _invSave]] call invDB;
-	if (_saveSuccess) then {diag_log format ["Successful save on disconnect (UID %1)", _this select 2];}
-	else {diag_log format ["Unsuccessful save on disconnect (UID %1)", _this select 2];};
+	_saveSuccess = ["write", _uid, "inv", _invSave] call invDB;
+	if (_saveSuccess) then {diag_log format ["Successful save on disconnect (UID %1)", _uid];}
+	else {diag_log format ["Unsuccessful save on disconnect (UID %1)", _uid];};
 };
-if (_saveOnQuit) then {addMissionEventHandler ["HandleDisconnect", disconnectHandler];};
+if (_saveOnQuit) then {addMissionEventHandler ["HandleDisconnect", disconnectSaveHandler];};
 
 forceSaveHandler = 
 {

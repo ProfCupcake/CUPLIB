@@ -18,25 +18,35 @@ It is recommended to apply this script in initPlayerLocal.sqf
 by Professor Cupcake
 */
 
-_box = _this select 0;
-_dist = _this select 1;
+params ["_box", "_dist"];
 
-_checkArsenalDistance = 
+if (isNil "CUPARS_arsenalAreas") then
+{
+	CUPARS_arsenalAreas = [[_box, _dist]];
+} else
+{
+	CUPARS_arsenalAreas pushBack [_box, _dist];
+};
+
+CUPARS_checkArsenalDistance = 
 {
 	_return = false;
-	if (player distance _box <= _dist) then {_return = true;};
+	{
+		_x params ["_box", "_dist"];
+		if (player distance _box <= _dist) exitWith {_return = true;};
+	} foreach CUPARS_arsenalAreas;
 	_return
 };
 
-_arsenalActionParams = ["Virtual Arsenal", {["Open",true] spawn BIS_fnc_arsenal},nil,1.5,true,true,"","call _checkArsenalDistance"];
-_arsenalAction = player addAction _arsenalActionParams;
-player addEventHandler ["Killed", {player removeAction _arsenalAction;}];
-player addEventHandler ["Respawn", {_arsenalAction = player addAction _arsenalActionParams;}];
-
 if !(isNil "ace_arsenal_fnc_openBox") then
 {
-	_aceArsenalActionParams = ["ACE Arsenal", {[player, player, true] spawn ace_arsenal_fnc_openBox;}, nil, 1.5, true, true, "", "call _checkArsenalDistance"];
-	_aceArsenalAction = player addAction _aceArsenalActionParams;
-	player addEventHandler ["Killed", {player removeAction _aceArsenalAction;}];
-	player addEventHandler ["Respawn", {_aceArsenalAction = player addAction _aceArsenalActionParams;}];
+	CUPARS_aceArsenalActionParams = ["ACE Arsenal", {[player, player, true] spawn ace_arsenal_fnc_openBox;}, nil, 1.5, true, true, "", "call CUPARS_checkArsenalDistance"];
+	CUPARS_aceArsenalAction = player addAction CUPARS_aceArsenalActionParams;
+	player addEventHandler ["Killed", {player removeAction CUPARS_aceArsenalAction;}];
+	player addEventHandler ["Respawn", {CUPARS_aceArsenalAction = player addAction CUPARS_aceArsenalActionParams;}];
 };
+
+CUPARS_arsenalActionParams = ["Virtual Arsenal", {["Open",true] spawn BIS_fnc_arsenal},nil,1.5,true,true,"","call CUPARS_checkArsenalDistance"];
+CUPARS_arsenalAction = player addAction CUPARS_arsenalActionParams;
+player addEventHandler ["Killed", {player removeAction CUPARS_arsenalAction;}];
+player addEventHandler ["Respawn", {CUPARS_arsenalAction = player addAction CUPARS_arsenalActionParams;}];

@@ -1,5 +1,5 @@
 /*
-(This one is NOT BY ME - from forum post: https://forums.bohemia.net/forums/topic/205185-return-if-weapon-is-suppressed/?tab=comments#comment-3259205 )
+(This one is from forum post: https://forums.bohemia.net/forums/topic/205185-return-if-weapon-is-suppressed/?tab=comments#comment-3259205 )
 
 Checks if given unit is currently using a silenced weapon.
 

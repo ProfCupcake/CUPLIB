@@ -1,98 +1,59 @@
-/**
-Tests if a unit's currently selected weapon is suppressed. 
-Uses manually compiled lists to check. 
-Currently supports vanilla and RHS. 
-Only works on infantry - all other units will return false. 
+/*
+(This one is NOT BY ME - from forum post: https://forums.bohemia.net/forums/topic/205185-return-if-weapon-is-suppressed/?tab=comments#comment-3259205 )
 
-Input: unit - the unit whose weapon is to be checked
+Checks if given unit is currently using a silenced weapon.
 
-Output: boolean - true if suppressed, false otherwise
+parameters:
+_unit - object
 
-suppressed = unit call compile preprocessfilelinenumbers "isWeaponSuppressed.sqf";
+output:
+silenced - [true/false] - is the current weapon of the unit silenced?
+*/
 
-by Professor Cupcake
-**/
+params ["_unit"];
 
-if !(_this isKindOf "Man") exitWith {false};
-
-if (currentMuzzle _this != currentWeapon _this) exitWith {false}; //If alternate muzzle (e.g. grenade launcher, the Type-115's underslung .50), assume it's not suppressed
-
-_primaryWeapons = [
-	"srifle_DMR_04_F",
-	"srifle_DMR_04_Tan_F",
-	"rhs_weap_vss",
-	"rhs_weap_vss_grip",
-	"rhs_weap_vss_grip_npz",
-	"rhs_weap_vss_npz",
-	"rhs_weap_asval",
-	"rhs_weap_asval_grip",
-	"rhs_weap_asval_grip_npz",
-	"rhs_weap_asval_npz"
-];
-
-_primaryAttachments = [
-	"rhs_acc_dtk4long",
-	"rhs_acc_dtk4short",
-	"rhs_acc_dtk4screws",
-	"rhs_acc_pbs1",
-	"rhs_acc_pbs4",
-	"rhs_acc_tgpa",
-	"rhsusf_acc_nt4_black",
-	"rhsusf_acc_nt4_tan",
-	"rhsusf_acc_rotex5_grey",
-	"rhsusf_acc_rotex5_tan",
-	"rhsusf_acc_M2010S",
-	"rhsusf_acc_M2010S_d",
-	"rhsusf_acc_M2010S_sa",
-	"rhsusf_acc_M2010S_wd",
-	"rhsusf_acc_SR25S",
-	"rhsgref_sdn6_suppressor",
-	"rhsusf_acc_rotex_mp7_aor1",
-	"rhsusf_acc_rotex_mp7",
-	"rhsusf_acc_rotex_mp7_desert",
-	"rhsusf_acc_rotex_mp7_winter",
-	"rhs_acc_tgpv",
-	"rhs_acc_tgpv2"
-];
-
-_handguns = [
-];
-
-_handgunAttachments = [
-	"rhs_acc_6p9_suppressor",
-	"rhsusf_acc_omega9k"
-];
-
-_return = false;
-
-if (currentWeapon _this == primaryWeapon _this) then
+//Check if the current weapon has an attachment in silencer slot
+_s = _unit weaponAccessories (currentWeapon _unit) select 0;
+if(_s != "") exitWith
 {
-	if (primaryWeapon _this in _primaryWeapons) then
-	{
-		_return = true;
-	} else
-	{
-		{
-			// All vanilla suppressors begin with "muzzle_snds_", so we can just test for that
-			if (_x select [0,12] == "muzzle_snds_") exitWith {_return = true;};
-			if (_x in _primaryAttachments) exitWith {_return = true;};
-		} foreach (primaryWeaponItems _this);
-	};
+	//Check if the silencer attachment is indeed a silencer by checking the audibleFire
+	_a = getNumber (configfile >> "CfgWeapons" >> _s >> "ItemInfo" >> "AmmoCoef" >> "audibleFire");
+	if(_a < 1) then
+	{true}
+	else
+	{false};
 };
 
-if (currentWeapon _this == handgunWeapon _this) then
-{
-	if (handgunWeapon _this in _handguns) then
-	{
-		_return = true;
-	} else
-	{
-		{
-			// All vanilla suppressors begin with "muzzle_snds_", so we can just test for that
-			if (_x select [0,12] == "muzzle_snds_") exitWith {_return = true;};
-			if (_x in _handgunAttachments) exitWith {_return = true;};
-		} foreach (handgunItems _this);
-	};
-};
+//If there is no silencer, check weapon's ammo audibleFire coefficient
+_mag = currentMagazine (vehicle _unit);
+_ammo = getText (configFile >> "cfgMagazines" >> _mag >> "ammo");
+_ammoAudible = getNumber (configFile >> "cfgAmmo" >> _ammo >> "audibleFire");
+//Compare with threshold value
+if(_ammoAudible < 5.5) then //See table below for more values
+{true}
+else
+{false};
 
-_return
+
+/*
+auidibleFire data for different ammo and silencer attachments:
+
+configfile >> "CfgAmmo" >> _ammo >> "audibleFire"
+configfile >> "CfgWeapons" >> _attachment >> "ItemInfo" >> "AmmoCoef" >> "audibleFire"
+
+standard 5.56mm		35
+standard .45		45 (handgun)
+standard .50		120 LRRs
+standard 9.3mm		80 (The marksmen DLC rifle)
+standard 12.7mm		5 (KIR with builtin silencer)
+RHS 5.45mm			7
+RHS 5.56mm 			7
+RHS 7.62mm 			7
+RHS 9mm				5.65 (handgun)
+RHS 9mm				2.5 (val/vintorez builtin silencer)
+
+attachments:
+RHS non-silencers:	1.0
+RHS silencers:		0.4
+standard silencers:	0.04
+*/

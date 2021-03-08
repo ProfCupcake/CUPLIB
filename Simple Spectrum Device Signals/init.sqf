@@ -1,0 +1,1 @@
+call compile preprocessfilelinenumbers "cupsignal\cupsignal_init.sqf";

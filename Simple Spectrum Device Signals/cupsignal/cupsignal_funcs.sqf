@@ -1,7 +1,11 @@
 /**
 List of signals, stored identically to the "addSignal" parameters
 **/
-CUPSIGNAL_signalList = [];
+if (isServer) then
+{
+	CUPSIGNAL_signalList = [];
+	publicVariable "CUPSIGNAL_signalList";
+};
 
 /**
 Add new signal to be tracked.
@@ -29,6 +33,7 @@ CUPSIGNAL_addSignal =
 		};
 		_i = _i + 1;
 	};
+	publicVariable "CUPSIGNAL_signalList";
 	_index
 };
 
@@ -39,6 +44,7 @@ CUPSIGNAL_removeSignal =
 {
 	params ["_i"];
 	CUPSIGNAL_signalList set [_i, nil];
+	publicVariable "CUPSIGNAL_signalList";
 };
 
 /**
@@ -91,7 +97,7 @@ CUPSIGNAL_calculateSignalStrength =
 		_strength = _signalArray call CUPSIGNAL_calculateStrengthFromArray;
 	};
 	_strength
-}; 
+};
 
 /**
 Central signal update loop

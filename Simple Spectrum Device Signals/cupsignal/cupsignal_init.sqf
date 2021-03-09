@@ -22,13 +22,27 @@ CUPSIGNAL_freqRanges = createHashMapFromArray [["muzzle_antenna_01_f",[78,89]], 
 // If the antenna cannot be found in the above HashMap, default to this frequency range
 CUPSIGNAL_defaultFreqRange = [78,89];
 
+// Exponent for strength over distance. 
+// At 1, strength is adjusted linearly over distance. 
+// Values higher than 1 will cause signals to get stronger quicker the closer you get. (e.g. from 200m -> 100m will be a greater increase in signal strength than 300m -> 200m)
+// Values between 0 and 1 will have the opposite effect. 
+// Values below 0 may break things, but if it doesn't break it'll reverse signal strengths (further = stronger and vice-versa). Not recommended for anything other than goofing around. 
+CUPSIGNAL_distanceExponent = 1;
+
+// Same as above, but for direction
+CUPSIGNAL_directionExponent = 1;
+
+// Maximum strength of signals. Doesn't really change anything other than the numbers shown on the Spectrum display. 
+// This may break things if set to a value below 0. 
+CUPSIGNAL_maxStrength = 100;
+
 ///////////////////////////////////////////////////////////////////////////////////////////
 
 missionNamespace setVariable ["#EM_Transmit", false];
-missionNamespace setVariable ["#EM_FMin", 78];
-missionNamespace setVariable ["#EM_FMax", 89];
+missionNamespace setVariable ["#EM_FMin", 0];
+missionNamespace setVariable ["#EM_FMax", 0];
 missionNamespace setVariable ["#EM_SMin", 0];
-missionNamespace setVariable ["#EM_SMax", 100];
+missionNamespace setVariable ["#EM_SMax", CUPSIGNAL_maxStrength];
 missionNamespace setVariable ["#EM_SelMin", 0];
 missionNamespace setVariable ["#EM_SelMax", 0.5];
 

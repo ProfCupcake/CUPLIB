@@ -42,6 +42,58 @@ CUPSIGNAL_removeSignal =
 };
 
 /**
+Takes array formatted from signalList and calculates signal strength for local player
+**/
+CUPSIGNAL_calculateStrengthFromArray = 
+{
+	params ["_pos", "_freq", "_maxRange", "_minRange", "_directional"];
+	private ["_distance","_strength"];
+	_distance = player distance2D _pos;
+	_strength = 0;
+	if (_distance < _maxRange) then
+	{
+		if (_distance > _minRange) then
+		{
+			_strength = (1-(_distance/(_maxRange-_minRange)));
+			_strength = _strength^CUPSIGNAL_distanceExponent;
+			if (_directional) then
+			{
+				private ["_dirDiff","_dirCoeff"];
+				_dirDiff = abs ((player getDir _pos) - (direction player));
+				_dirCoeff = (1-(_dirDiff/CUPSIGNAL_maxAngle)) max 0;
+				_dirCoeff = _dirCoeff^CUPSIGNAL_directionExponent;
+				_strength = _strength*_dirCoeff;
+			};
+		} else 
+		{
+			_strength = 1;
+		};
+		_strength = _strength*CUPSIGNAL_maxStrength;
+	};
+	_strength
+};
+
+/**
+Calculates signal strength from given signal index
+Usage example: 
+
+strength = 2 call CUPSIGNAL_calculateSignalStrength;
+
+If signal index does not exist, returns -1.
+**/
+CUPSIGNAL_calculateSignalStrength = 
+{
+	private ["_strength", "_signalArray"];
+	_strength = -1;
+	_signalArray = CUPSIGNAL_signalList select _this;
+	if !(isNil {_signalArray}) then
+	{
+		_strength = _signalArray call CUPSIGNAL_calculateStrengthFromArray;
+	};
+	_strength
+}; 
+
+/**
 Central signal update loop
 **/
 CUPSIGNAL_tickLoop = 
@@ -50,34 +102,36 @@ CUPSIGNAL_tickLoop =
 	{
 		if ("hgun_esd_" in currentWeapon player) then
 		{
+			private "_equippedAntenna";
+			_equippedAntenna = handgunItems player select 0;
+			if ((isNil {CUPSIGNAL_equippedAntenna}) or {(_equippedAntenna != CUPSIGNAL_equippedAntenna)}) then
+			{
+				private "_freqRanges";
+				if (_equippedAntenna == "") then
+				{
+					_freqRanges = [0,0];
+				} else
+				{
+					_freqRanges = CUPSIGNAL_freqRanges get _equippedAntenna;
+					if (isNil {_freqRanges}) then
+					{
+						_freqRanges = CUPSIGNAL_defaultFreqRange;
+					};
+				};
+				missionNamespace setVariable ["#EM_FMin", _freqRanges select 0];
+				missionNamespace setVariable ["#EM_FMax", _freqRanges select 1];
+				CUPSIGNAL_equippedAntenna = _equippedAntenna;
+			};
 			private "_values";
 			_values = [];
 			{
 				if !(isNil {_x}) then
 				{
-					_x params ["_pos", "_freq", "_maxRange", "_minRange", "_directional"];
-					private ["_distance","_strength"];
-					_distance = player distance2D _pos;
-					if (_distance < _maxRange) then
-					{
-						if (_distance > _minRange) then
-						{
-							_strength = (1-(_distance/(_maxRange-_minRange)))*100;
-							if (_directional) then
-							{
-								private ["_dirDiff","_dirCoeff"];
-								_dirDiff = (player getDir _pos) - (direction player);
-								if (_dirDiff < 0) then {_dirDiff = _dirDiff*-1;};
-								_dirCoeff = (1-(_dirDiff/CUPSIGNAL_maxAngle)) max 0;
-								_strength = _strength*_dirCoeff;
-							};
-						} else 
-						{
-							_strength = 100;
-						};
+						_x params ["", "_freq"];
+						private "_strength";
+						_strength = _x call CUPSIGNAL_calculateStrengthFromArray;
 						_values pushBack _freq;
 						_values pushBack _strength;
-					};
 				};
 			} forEach CUPSIGNAL_signalList;
 			missionNamespace setVariable ["#EM_Values", _values];

@@ -6,7 +6,7 @@ Functions:
 / Update local #EM_Values accordingly:-
 	/ Add/remove signals that come in to/out of range. 
 	/ Attenuate signal strength by distance and direction (params to toggle?)
-	- Signal strength exponent option, for quadratic (etc.) falloff?
+	/ Signal strength exponent option, for quadratic (etc.) falloff?
 / Allow mission creator to add signals via function
 / Allow mission creator to remove signals via function
 - Allow mission creator to modify and/or see parameters for signals? 
@@ -15,4 +15,4 @@ Functions:
 	- Will require MP sync
 - Option for jamming antenna to interfere with signal detection?
 - Integration with TFAR and/or ACRE, allowing Spectrum to track enemy radios?
-- Upgrade to 3D distance/direction? 
+- Upgrade to 3D distance/direction?

@@ -16,7 +16,7 @@ Add a signal using the following command:-
 
 `index = [pos, freq, maxRange, minRange, directional] call CUPSIGNAL_addSignal;`
 
-`pos` is the position of the signal. This can be either a 2D arry, or an object. 
+`pos` is the position of the signal. This can be either a 2D array, or an object. 
 
 `freq` is the frequency of the signal. Try to keep this in the range of the antennae, for what should be obvious reasons. 
 

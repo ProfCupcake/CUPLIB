@@ -1,8 +1,7 @@
 // Sets whether signals are attenuated based on direction (i.e. stronger if looking towards signal) by default
 CUPSIGNAL_directional = true;
 
-// Maximum angle off signal before signal disappears, in degrees. 
-// Note: this is angle either way, so the effective arc of signal visibility is actually double this
+// Maximum angle off signal before signal disappears, in degrees.
 CUPSIGNAL_maxAngle = 60;
 
 // Default maximum range for newly-created signals, in metres
@@ -37,6 +36,8 @@ CUPSIGNAL_directionExponent = 1;
 CUPSIGNAL_maxStrength = 100;
 
 ///////////////////////////////////////////////////////////////////////////////////////////
+
+CUPSIGNAL_maxAngleVM = CUPSIGNAL_maxAngle*(2/360);
 
 missionNamespace setVariable ["#EM_Transmit", false];
 missionNamespace setVariable ["#EM_FMin", 0];

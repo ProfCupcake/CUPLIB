@@ -21,6 +21,14 @@ CUPSIGNAL_addSignal =
 {
 	params ["_pos", "_freq", ["_maxRange",CUPSIGNAL_defaultMaxRange], ["_minRange",CUPSIGNAL_defaultMinRange], ["_directional",CUPSIGNAL_directional]];
 	private "_index";
+	if (typeName _pos == "ARRAY") then
+	{
+		if (isNil {_pos select 2}) then
+		{
+			_pos = [_pos select 0, _pos select 1, 0];
+		};
+		_pos = ASLtoAGL _pos;
+	};
 	_index = -1;
 	private "_i";
 	_i = 0;
@@ -54,7 +62,7 @@ CUPSIGNAL_calculateStrengthFromArray =
 {
 	params ["_pos", "_freq", "_maxRange", "_minRange", "_directional"];
 	private ["_distance","_strength"];
-	_distance = player distance2D _pos;
+	_distance = player distance _pos;
 	_strength = 0;
 	if (_distance < _maxRange) then
 	{
@@ -65,8 +73,16 @@ CUPSIGNAL_calculateStrengthFromArray =
 			if (_directional) then
 			{
 				private ["_dirDiff","_dirCoeff"];
-				_dirDiff = abs ((player getDir _pos) - (direction player));
-				_dirCoeff = (1-(_dirDiff/CUPSIGNAL_maxAngle)) max 0;
+				//_dirDiff = abs ((player getDir _pos) - (direction player));
+				
+				if (typeName _pos == "OBJECT") then
+				{
+					_pos = getPosASL _pos;
+				};
+				
+				_dirDiff = vectorMagnitude ((player weaponDirection currentWeapon player) vectorDiff (eyePos player vectorFromTo _pos));
+				
+				_dirCoeff = (1-(_dirDiff/CUPSIGNAL_maxAngleVM)) max 0;
 				_dirCoeff = _dirCoeff^CUPSIGNAL_directionExponent;
 				_strength = _strength*_dirCoeff;
 			};

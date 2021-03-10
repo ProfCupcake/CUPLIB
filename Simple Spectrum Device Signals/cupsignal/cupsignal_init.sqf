@@ -1,10 +1,10 @@
 // Sets whether signals are attenuated based on direction (i.e. stronger if looking towards signal) by default
 CUPSIGNAL_directional = true;
 
-// Whether or not signals are simulated in 3D
+// Whether or not signals are simulated in 3D; if false, height is ignored
 CUPSIGNAL_3D = true;
 
-// Maximum angle off signal before signal disappears, in degrees.
+// Maximum angle off signal before signal disappears, in degrees
 CUPSIGNAL_maxAngle = 60;
 
 // Default maximum range for newly-created signals, in metres
@@ -32,7 +32,7 @@ CUPSIGNAL_defaultFreqRange = [78,89];
 CUPSIGNAL_distanceExponent = 1;
 
 // Same as above, but for direction
-CUPSIGNAL_directionExponent = 1;
+CUPSIGNAL_directionExponent = 2;
 
 // Maximum strength of signals. Doesn't really change anything other than the numbers shown on the Spectrum display. 
 // This may break things if set to a value below 0. 

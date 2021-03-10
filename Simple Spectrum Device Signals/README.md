@@ -2,6 +2,28 @@
 
 A script that implements signal detection functionality for the Spectrum Device. 
 
+Features include:
+- Automatic setup of Spectrum Device parameters
+- Dead Simple setup
+- Signals can be either a set position or attached to an object
+- Signals attenuated by both distance and direction
+- Simulated in 3D; optional 2D mode also available
+- Sync'd for multiplayer
+- Different frequency ranges for different Spectrum Device antennae
+- A whole bunch of options for customisation
+- An example mission that hopefully explains all this better than I can
+
+Features that are planned to be added:
+- Nothing! Everything is here already.
+
+Features I'd *like* to do:
+- Implement Spectrum Device "transmit" function, which will add a signal for others to track
+- Implement TFAR and/or ACRE integration, allowing Spectrum Device to track active radios (this will likely be a separate script)
+
+Features that are *not* included, and not planned:
+- Terrain/obstacles blocking signals
+- Proper signal strength simulation (it simply works on a 0-100% scale, relative to the max/min ranges of signals)
+
 ## Installation
 
 Add it to your mission by copying the "cupsignal" folder into your mission folder, and adding the following to your init.sqf:
@@ -27,6 +49,8 @@ Add a signal using the following command:-
 `directional` sets whether this signal is directional; that is, if you need to be looking at it to detect it. Optional, defaults to true. 
 
 Note that the defaults for the above can be changed in cupsignal_init.sqf. 
+
+IMPORTANT NOTE FOR MULTIPLAYER: Make sure you only add signals on a single machine! Ideally, this should be the server, so you should add these inside an `isServer` block. You can add them on the client-side, but only do that if you know for sure that it will only run locally. 
 
 The return value - shown above as being assigned to `index` - is the index of the newly-created signal. This is only required if you intend to remove the signal later, via the following command:-
 

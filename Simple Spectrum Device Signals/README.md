@@ -68,6 +68,6 @@ Enabling the TFAR integration is a simple matter of using the following command:
 
 `[minSWrange, maxSWrange, minLRrange, maxLRrange] call CUPSIGNAL_enableTFARIntegration;`
 
-Obviously, this requires TFAR to function. Make sure you only call this server-side (e.g. in an `isServer` block). 
+Obviously, this requires TFAR to function, and must be called on every client to work for each of them. 
 
 The parameters should be self-explanatory; they are the minimum and maximum ranges for short-wave and long-range radios respectively (diver radios are ignored). They are all optional, defaulting to `[1, 500, 5, 2500]`.

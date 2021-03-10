@@ -228,5 +228,5 @@ CUPSIGNAL_enableTFARIntegration =
 				_unit getVariable "CUPSIGNAL_radioSignalIndex" call CUPSIGNAL_removeSignal;
 			};
 		};
-	}, ObjNull] call TFAR_fnc_addEventHandler;
+	}, player] call TFAR_fnc_addEventHandler;
 };

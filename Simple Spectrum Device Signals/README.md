@@ -11,12 +11,11 @@ Features include:
 - Sync'd for multiplayer
 - Different frequency ranges for different Spectrum Device antennae
 - A whole bunch of options for customisation
-- An example mission that hopefully explains all this better than I can
 
 Features that are planned to be added:
-- Nothing! Everything is here already.
+- Nothing! Everything is here already
 
-Features I'd *like* to do:
+Features I'd *like* to add:
 - Implement Spectrum Device "transmit" function, which will add a signal for others to track
 - Implement TFAR and/or ACRE integration, allowing Spectrum Device to track active radios (this will likely be a separate script)
 

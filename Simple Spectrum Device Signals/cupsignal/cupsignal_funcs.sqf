@@ -62,7 +62,13 @@ CUPSIGNAL_calculateStrengthFromArray =
 {
 	params ["_pos", "_freq", "_maxRange", "_minRange", "_directional"];
 	private ["_distance","_strength"];
-	_distance = player distance _pos;
+	if CUPSIGNAL_3D then
+	{
+		_distance = player distance _pos;
+	} else
+	{
+		_distance = player distance2D _pos;
+	};
 	_strength = 0;
 	if (_distance < _maxRange) then
 	{
@@ -73,16 +79,21 @@ CUPSIGNAL_calculateStrengthFromArray =
 			if (_directional) then
 			{
 				private ["_dirDiff","_dirCoeff"];
-				//_dirDiff = abs ((player getDir _pos) - (direction player));
-				
-				if (typeName _pos == "OBJECT") then
+				if CUPSIGNAL_3D then 
 				{
-					_pos = getPosASL _pos;
+					if (typeName _pos == "OBJECT") then
+					{
+						_pos = getPosASL _pos;
+					};
+					
+					_dirDiff = vectorMagnitude ((player weaponDirection currentWeapon player) vectorDiff (eyePos player vectorFromTo _pos));
+					_dirCoeff = (1-(_dirDiff/CUPSIGNAL_maxAngleVM)) max 0;
+				} else
+				{
+					_dirDiff = abs ((player getDir _pos) - (direction player));
+					_dirCoeff = (1-(_dirDiff/CUPSIGNAL_maxAngle)) max 0;
 				};
 				
-				_dirDiff = vectorMagnitude ((player weaponDirection currentWeapon player) vectorDiff (eyePos player vectorFromTo _pos));
-				
-				_dirCoeff = (1-(_dirDiff/CUPSIGNAL_maxAngleVM)) max 0;
 				_dirCoeff = _dirCoeff^CUPSIGNAL_directionExponent;
 				_strength = _strength*_dirCoeff;
 			};

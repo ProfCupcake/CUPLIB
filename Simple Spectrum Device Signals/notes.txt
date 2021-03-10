@@ -15,4 +15,13 @@ Functions:
 	- Will require MP sync
 - Option for jamming antenna to interfere with signal detection?
 - Integration with TFAR and/or ACRE, allowing Spectrum to track enemy radios?
-- Upgrade to 3D distance/direction?
+/ Upgrade to 3D distance/direction?
+
+- Direction "fuzzing"
+	- Deadzone that gets more forgiving the closer to the signal you are
+	- Possibly relative to min. range?
+	- wait hang on this is just what the exponent can do, kind of
+
+/ Option to select between 2D/3D modes
+
+- Automatically adjust selection width to suit frequency range? 

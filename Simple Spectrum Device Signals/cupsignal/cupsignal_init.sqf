@@ -1,6 +1,9 @@
 // Sets whether signals are attenuated based on direction (i.e. stronger if looking towards signal) by default
 CUPSIGNAL_directional = true;
 
+// Whether or not signals are simulated in 3D
+CUPSIGNAL_3D = true;
+
 // Maximum angle off signal before signal disappears, in degrees.
 CUPSIGNAL_maxAngle = 60;
 

@@ -10,6 +10,7 @@ Features include:
 - Simulated in 3D; optional 2D mode also available
 - Sync'd for multiplayer
 - Different frequency ranges for different Spectrum Device antennae
+- Optional TFAR integration; active radios will appear as trackable signals
 - A whole bunch of options for customisation
 
 Features that are planned to be added:
@@ -17,9 +18,9 @@ Features that are planned to be added:
 
 Features I'd *like* to add:
 - Implement Spectrum Device "transmit" function, which will add a signal for others to track
-- Implement TFAR and/or ACRE integration, allowing Spectrum Device to track active radios (this will likely be a separate script)
+- Implement ACRE integration
 
-Features that are *not* included, and not planned:
+Features that are not included, and not planned:
 - Terrain/obstacles blocking signals
 - Proper signal strength simulation (it simply works on a 0-100% scale, relative to the max/min ranges of signals)
 
@@ -54,3 +55,19 @@ IMPORTANT NOTE FOR MULTIPLAYER: Make sure you only add signals on a single machi
 The return value - shown above as being assigned to `index` - is the index of the newly-created signal. This is only required if you intend to remove the signal later, via the following command:-
 
 `index call CUPSIGNAL_removeSignal;`
+
+There is also the following command:
+
+`index call CUPSIGNAL_calculateSignalStrength`
+
+As it says, this will calculate the signal strength for the given signal index for the local player and return it. If the signal index is invalid, it will return -1. 
+
+## TFAR Integration
+
+Enabling the TFAR integration is a simple matter of using the following command:
+
+`[minSWrange, maxSWrange, minLRrange, maxLRrange] call CUPSIGNAL_enableTFARIntegration;`
+
+Obviously, this requires TFAR to function. Make sure you only call this server-side (e.g. in an `isServer` block). 
+
+The parameters should be self-explanatory; they are the minimum and maximum ranges for short-wave and long-range radios respectively (diver radios are ignored). They are all optional, defaulting to `[1, 500, 5, 2500]`.

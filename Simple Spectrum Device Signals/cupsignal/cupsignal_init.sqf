@@ -38,6 +38,9 @@ CUPSIGNAL_directionExponent = 2;
 // This may break things if set to a value below 0. 
 CUPSIGNAL_maxStrength = 100;
 
+// When true, enables debug output
+CUPSIGNAL_debug = false;
+
 ///////////////////////////////////////////////////////////////////////////////////////////
 
 CUPSIGNAL_maxAngleVM = CUPSIGNAL_maxAngle*(2/180);

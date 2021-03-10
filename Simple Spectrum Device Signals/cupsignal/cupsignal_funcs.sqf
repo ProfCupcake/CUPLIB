@@ -173,3 +173,60 @@ CUPSIGNAL_tickLoop =
 	};
 };
 
+/**
+Enables TFAR integration
+Paramters:
+- min SW range, default 1
+- max SW range, default 500
+- min LR range, default 5
+- max LR range, default 2500
+**/
+CUPSIGNAL_enableTFARIntegration = 
+{
+	params [["_minSWrange", 1], ["_maxSWrange", 500], ["_minLRrange", 5], ["_maxLRrange", 2500]];
+	["radioSpectrumSignalEH", "OnTangent", 
+	{
+		params ["_unit", "_radioClass", "_radioUsed", "_additionalChannel", "_buttonDown"];
+		private ["_freq","_minRange","_maxRange"];
+		if (_radioUsed == 0) then
+		{
+			_minRange = _minSWrange;
+			_maxRange = _maxSWrange;
+			if (_additionalChannel) then
+			{
+				private "_radio";
+				_radio = (call TFAR_fnc_activeSwRadio);
+				_freq = [_radio, (_radio call TFAR_fnc_getAdditionalSwChannel)+1] call TFAR_fnc_getChannelFrequency;
+			} else
+			{
+				_freq = (call TFAR_fnc_activeSwRadio) call TFAR_fnc_getSwFrequency;
+			};
+		};
+		if (_radioUsed == 1) then
+		{
+			_minRange = _minLRrange;
+			_maxRange = _maxLRrange;
+			if (_additionalChannel) then
+			{
+				private "_radio";
+				_radio = (call TFAR_fnc_activeLrRadio);
+				_freq = [_radio, (_radio call TFAR_fnc_getAdditionalLrChannel)+1] call TFAR_fnc_getChannelFrequency;
+			} else
+			{
+				_freq = (call TFAR_fnc_activeLrRadio) call TFAR_fnc_getLrFrequency;
+			};
+		};
+		if (!isNil {_freq}) then
+		{
+			if (_buttonDown) then
+			{
+				if (CUPSIGNAL_debug) then {systemChat format ["%1 started transmitting! Freq: %2",_unit,_freq];};
+				_unit setVariable ["CUPSIGNAL_radioSignalIndex", [_unit, parseNumber _freq] call CUPSIGNAL_addSignal];
+			} else
+			{
+				if (CUPSIGNAL_debug) then {systemChat format ["%1 stopped transmitting! Freq: %2",_unit,_freq];};
+				_unit getVariable "CUPSIGNAL_radioSignalIndex" call CUPSIGNAL_removeSignal;
+			};
+		};
+	}, ObjNull] call TFAR_fnc_addEventHandler;
+};

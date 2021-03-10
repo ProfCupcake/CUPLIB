@@ -40,7 +40,7 @@ CUPSIGNAL_maxStrength = 100;
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 
-CUPSIGNAL_maxAngleVM = CUPSIGNAL_maxAngle*(2/360);
+CUPSIGNAL_maxAngleVM = CUPSIGNAL_maxAngle*(2/180);
 
 missionNamespace setVariable ["#EM_Transmit", false];
 missionNamespace setVariable ["#EM_FMin", 0];

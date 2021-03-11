@@ -16,7 +16,7 @@ Features include:
 Features that are planned to be added:
 - Nothing! Everything is here already
 
-Features I'd *like* to add:
+Features I'd *like* to add (but can't guarantee):
 - Implement Spectrum Device "transmit" function, which will add a signal for others to track
 - Implement ACRE integration
 

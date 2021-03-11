@@ -5,6 +5,7 @@ CUPSIGNAL_directional = true;
 CUPSIGNAL_3D = true;
 
 // Maximum angle off signal before signal disappears, in degrees
+// Actual visible angle is double this (think radius vs diameter)
 CUPSIGNAL_maxAngle = 60;
 
 // Default maximum range for newly-created signals, in metres

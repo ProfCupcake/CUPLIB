@@ -74,7 +74,7 @@ CUPSIGNAL_calculateStrengthFromArray =
 	{
 		if (_distance > _minRange) then
 		{
-			_strength = (1-(_distance/(_maxRange-_minRange)));
+			_strength = (1-(_distance-_minRange)/(_maxRange-_minRange)));
 			_strength = _strength^CUPSIGNAL_distanceExponent;
 			if (_directional) then
 			{

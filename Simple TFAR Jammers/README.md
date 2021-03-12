@@ -1,6 +1,6 @@
 # Dead Simple Task Force Radio Jammer Script
 
-A script that implements signal detection functionality for the Spectrum Device. 
+A script that implements TFAR radio jammers. 
 
 Features include:
 - Dead Simple setup

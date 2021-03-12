@@ -64,7 +64,13 @@ CUPSIGNAL_calculateStrengthFromArray =
 	private ["_distance","_strength"];
 	if CUPSIGNAL_3D then
 	{
-		_distance = player distance _pos;
+		if (typeName _pos == "ARRAY") then
+		{
+			_distance = player distance ASLtoAGL _pos;
+		} else
+		{
+			_distance = player distance _pos;
+		};
 	} else
 	{
 		_distance = player distance2D _pos;
@@ -230,3 +236,19 @@ CUPSIGNAL_enableTFARIntegration =
 		};
 	}, player] call TFAR_fnc_addEventHandler;
 };
+
+/**
+
+saving the following for later...
+
+//First Zues
+_curatorModule = allCurators select 0;
+//Unit who is Zeus
+_curatorUnit = getAssignedCuratorUnit _curatorModule;
+//Zues editable Units
+_curatorObjects = curatorEditableObjects _curatorModule select { typeOf _x isKindOf "CAManBase" };
+//Zues remoteControlled Unit [ unit ] OR []
+_curatorControlledUnit = _curatorObjects select { _x getVariable "bis_fnc_moduleremotecontrol_owner" isEqualTo _curatorUnit };
+
+from https://forums.bohemia.net/forums/topic/220229-find-zeus-controlled-unit/
+**/

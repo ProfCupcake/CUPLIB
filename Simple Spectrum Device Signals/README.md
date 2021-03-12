@@ -14,7 +14,7 @@ Features include:
 - A whole bunch of options for customisation
 
 Features that are planned to be added:
-- Nothing! Everything is here already
+- Support for Zeus Remote Control
 
 Features I'd *like* to add (but can't guarantee):
 - Implement Spectrum Device "transmit" function, which will add a signal for others to track

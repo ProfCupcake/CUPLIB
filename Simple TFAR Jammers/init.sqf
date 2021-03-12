@@ -1,0 +1,1 @@
+call compile preprocessfilelinenumbers "cupjam\cupjam_init.sqf";

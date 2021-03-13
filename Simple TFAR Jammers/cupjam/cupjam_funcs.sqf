@@ -50,7 +50,7 @@ CUPJAM_addJammer =
 CUPJAM_removeJammer = 
 {
 	params ["_i"];
-	_i params ["", "", "", "_signalIndex"];
+	(CUPJAM_jammerList select _i) params ["", "", "", "_signalIndex"];
 	if (!isNil {_signalIndex}) then
 	{
 		_signalIndex call CUPSIGNAL_removeSignal;

@@ -50,6 +50,11 @@ CUPJAM_addJammer =
 CUPJAM_removeJammer = 
 {
 	params ["_i"];
+	_i params ["", "", "", "_signalIndex"];
+	if (!isNil {_signalIndex}) then
+	{
+		_signalIndex call CUPSIGNAL_removeSignal;
+	};
 	CUPJAM_jammerList set [_i, nil];
 	publicVariable "CUPJAM_jammerList";
 };

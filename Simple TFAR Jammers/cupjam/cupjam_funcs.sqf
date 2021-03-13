@@ -1,4 +1,8 @@
-// Array for jammers, formatted as in CUPJAM_addJammer
+// Array for jammers, formatted as follows:-
+// - location/object
+// - min range
+// - max range
+// - assigned CUPSIGNAL index (or nil, if CUPSIGNAL support is disabled)
 if (isServer) then
 {
 	CUPJAM_jammerList = [];
@@ -15,7 +19,7 @@ Parameters:
 CUPJAM_addJammer = 
 {
 	params ["_pos", ["_minRange", 25], ["_maxRange", 250]];
-	private "_index";
+	private ["_index", "_signalIndex"];
 	if (typeName _pos == "ARRAY") then
 	{
 		if (isNil {_pos select 2}) then
@@ -26,11 +30,15 @@ CUPJAM_addJammer =
 	_index = -1;
 	private "_i";
 	_i = 0;
+	if (CUPJAM_signalSupport) then
+	{
+		_signalIndex = [_pos, CUPJAM_signalFrequency, _maxRange*CUPJAM_signalMaxRangeMult, _minRange*CUPJAM_signalMinRangeMult] call CUPSIGNAL_addSignal;
+	};
 	while {_index < 0} do
 	{
 		if (isNil {CUPJAM_jammerList select _i}) then
 		{
-			CUPJAM_jammerList set [_i, [_pos, _minRange, _maxRange]];
+			CUPJAM_jammerList set [_i, [_pos, _minRange, _maxRange, _signalIndex]];
 			_index = _i;
 		};
 		_i = _i + 1;

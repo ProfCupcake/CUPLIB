@@ -8,11 +8,11 @@ Features include:
 - Within a certain range, radios are completely useless
 - Multiple jammers can overlap, applying their effects multiplicatively
 - Sync'd for multiplayer
+- Optional CUPSIGNAL integration, allowing jammers to be tracked down with the Spectrum Device
 
 Features that are planned to be added:
 - Support for Zeus Remote Control
 - Conical jammers (i.e. jam only in a set direction+angle)
-- CUPSIGNAL integration; jammers will emit a trackable signal
 
 Features I'd *like* to add (but can't guarantee):
 - Full CUPSIGNAL/Spectrum Device integration that adds a functional jammer antenna

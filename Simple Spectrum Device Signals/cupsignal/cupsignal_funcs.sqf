@@ -95,7 +95,6 @@ CUPSIGNAL_calculateStrengthFromArray =
 	if (_distance < _maxRange) then
 	{
 		private "_coneCheck";
-		_coneCheck = false;
 		if (isNil {_forwards}) then
 		{
 			_coneCheck = true;

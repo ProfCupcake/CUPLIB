@@ -1,8 +1,12 @@
-// Array for jammers, formatted as follows:-
-// - location/object
-// - min range
-// - max range
-// - assigned CUPSIGNAL index (or nil, if CUPSIGNAL support is disabled)
+/** 
+Array for jammers, formatted as follows:-
+ - location/object
+ - max range
+ - min range
+ - assigned CUPSIGNAL index (or nil, if CUPSIGNAL support is disabled)
+ - direction
+ - angle
+**/
 if (isServer) then
 {
 	CUPJAM_jammerList = [];
@@ -13,12 +17,14 @@ if (isServer) then
 Add new jammer
 Parameters:
 - location or object, required
-- min range, default 25
 - max range, default 250
+- min range, default 25
+- direction, default nil
+- angle, default 60
 **/
 CUPJAM_addJammer = 
 {
-	params ["_pos", ["_minRange", 25], ["_maxRange", 250]];
+	params ["_pos", ["_maxRange", 250], ["_minRange", 25], "_direction", ["_angle", 60]];
 	private ["_index", "_signalIndex"];
 	if (typeName _pos == "ARRAY") then
 	{
@@ -32,13 +38,25 @@ CUPJAM_addJammer =
 	_i = 0;
 	if (CUPJAM_signalSupport) then
 	{
-		_signalIndex = [_pos, CUPJAM_signalFrequency, _maxRange*CUPJAM_signalMaxRangeMult, _minRange*CUPJAM_signalMinRangeMult] call CUPSIGNAL_addSignal;
+		if (isNil {_direction}) then
+		{
+			_signalIndex = [_pos, CUPJAM_signalFrequency, _maxRange*CUPJAM_signalMaxRangeMult, _minRange*CUPJAM_signalMinRangeMult, CUPSIGNAL_directional] call CUPSIGNAL_addSignal;
+		} else
+		{
+			_signalIndex = [_pos, CUPJAM_signalFrequency, _maxRange*CUPJAM_signalMaxRangeMult, _minRange*CUPJAM_signalMinRangeMult, CUPSIGNAL_directional, _direction, _angle] call CUPSIGNAL_addSignal;
+		};
 	};
 	while {_index < 0} do
 	{
 		if (isNil {CUPJAM_jammerList select _i}) then
 		{
-			CUPJAM_jammerList set [_i, [_pos, _minRange, _maxRange, _signalIndex]];
+			if (isNil {_direction}) then 
+			{
+				CUPJAM_jammerList set [_i, [_pos, _maxRange, _minRange, _signalIndex, nil, _angle]];
+			} else
+			{
+				CUPJAM_jammerList set [_i, [_pos, _maxRange, _minRange, _signalIndex, _direction, _angle]];
+			};
 			_index = _i;
 		};
 		_i = _i + 1;
@@ -61,21 +79,64 @@ CUPJAM_removeJammer =
 
 CUPJAM_calculateJamFactorFromArray = 
 {
-	params ["_pos", "_minRange", "_maxRange"];
+	params ["_pos", "_maxRange", "_minRange", "", "_direction", "_angle"];
 	private ["_distance", "_jamFactor"];
+	if (typeName _pos == "CODE") then
+	{
+		_pos = _this call _pos;
+	};
 	_distance = player distance _pos;
 	_jamFactor = 1;
 	if (_distance < _maxRange) then
 	{
-		if (_distance < _minRange) then
+		private "_coneCheck";
+		if (isNil {_direction}) then
 		{
-			_jamFactor = 0;
+			_coneCheck = true;
 		} else
 		{
-			_jamFactor = ((_distance-_minRange)/(_maxRange-_minRange))^CUPJAM_distanceExponent;
+			_coneCheck = [_pos, _direction, _angle, _this] call CUPSIGNAL_coneCheck;
+		};
+	
+		if (_coneCheck) then
+		{
+			if (_distance < _minRange) then
+			{
+				_jamFactor = 0;
+			} else
+			{
+				_jamFactor = ((_distance-_minRange)/(_maxRange-_minRange))^CUPJAM_distanceExponent;
+			};
 		};
 	};
 	_jamFactor
+};
+
+
+// Cone check function, copied from CUPSIGNAL as it doesn't need to be changed for this
+// maybe these two scripts should've just been put together, huh
+CUPSIGNAL_coneCheck = 
+{
+	params ["_pos", "_forwards", "_angle", "_signalArray"];
+	private ["_return", "_dirDiff"];
+	if (typeName _forwards == "CODE") then
+	{
+		_forwards = _signalArray call _forwards; 
+	};
+	
+	if (typeName _forwards == "SCALAR") then
+	{
+		_dirDiff = abs (_forwards - (_pos getDir player));
+		_return = (_dirDiff < _angle);
+	};
+	
+	if (typeName _forwards == "ARRAY") then
+	{
+		_dirDiff = vectorMagnitude (_forwards vectorDiff (_pos vectorFromTo eyePos player));
+		_return = (_dirDiff < (_angle/90));
+	};
+	
+	_return
 };
 
 /**CUPJAM_calculateJamFactor = 

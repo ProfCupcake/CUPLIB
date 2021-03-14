@@ -91,6 +91,17 @@ CUPSIGNAL_calculateStrengthFromArray =
 	{
 		_pos = getPosASL _pos;
 	};
+	
+	if (typeName _maxRange == "CODE") then
+	{
+		_maxRange = _this call _maxRange;
+	};
+	
+	if (typeName _minRange == "CODE") then
+	{
+		_minRange = _this call _minRange;
+	};
+	
 	_strength = 0;
 	if (_distance < _maxRange) then
 	{
@@ -105,6 +116,12 @@ CUPSIGNAL_calculateStrengthFromArray =
 		
 		if (_coneCheck) then
 		{
+			
+			if (typeName _freq == "CODE") then
+			{
+				_freq = _this call _freq;
+			};
+			
 			if (_distance > _minRange) then
 			{
 				_strength = (1-(_distance-_minRange)/(_maxRange-_minRange));
@@ -146,6 +163,11 @@ CUPSIGNAL_coneCheck =
 	if (typeName _forwards == "CODE") then
 	{
 		_forwards = _signalArray call _forwards; 
+	};
+	
+	if (typeName _angle == "CODE") then
+	{
+		_angle = _signalArray call _angle;
 	};
 	
 	if (typeName _forwards == "SCALAR") then

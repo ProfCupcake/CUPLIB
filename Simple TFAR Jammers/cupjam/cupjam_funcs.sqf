@@ -86,6 +86,14 @@ CUPJAM_calculateJamFactorFromArray =
 		_pos = _this call _pos;
 	};
 	_distance = player distance _pos;
+	if (typeName _maxRange == "CODE") then
+	{
+		_maxRange = _this call _maxRange;
+	};
+	if (typeName _minRange == "CODE") then
+	{
+		_minRange = _this call _minRange;
+	};
 	_jamFactor = 1;
 	if (_distance < _maxRange) then
 	{
@@ -122,6 +130,11 @@ CUPSIGNAL_coneCheck =
 	if (typeName _forwards == "CODE") then
 	{
 		_forwards = _signalArray call _forwards; 
+	};
+	
+	if (typeName _angle == "CODE") then
+	{
+		_angle = _signalArray call _angle;
 	};
 	
 	if (typeName _forwards == "SCALAR") then

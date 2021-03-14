@@ -126,6 +126,12 @@ CUPSIGNAL_calculateStrengthFromArray =
 			{
 				_strength = (1-(_distance-_minRange)/(_maxRange-_minRange));
 				_strength = _strength^CUPSIGNAL_distanceExponent;
+				
+				if (typeName _directional == "CODE") then
+				{
+					_directional = _this call _directional;
+				};
+				
 				if (_directional) then
 				{
 					private ["_dirDiff","_dirCoeff"];

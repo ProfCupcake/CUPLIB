@@ -22,8 +22,8 @@ Returns an index pointing to this signal in the list
 **/
 CUPSIGNAL_addSignal = 
 {
-	params ["_pos", "_freq", ["_maxRange",CUPSIGNAL_defaultMaxRange], ["_minRange",CUPSIGNAL_defaultMinRange], ["_directional",CUPSIGNAL_directional], "_forwards", ["_angle", CUPSIGNAL_defaultConeAngle]];
-	private "_index";
+	params ["_pos", "_freq", ["_maxRange",CUPSIGNAL_defaultMaxRange], ["_minRange",CUPSIGNAL_defaultMinRange], ["_directional",CUPSIGNAL_directional], "_forwards", ["_angle", CUPSIGNAL_defaultConeAngle], ["_args", []]];
+	private ["_index", "_signalArray"];
 	if (typeName _pos == "ARRAY") then
 	{
 		if (isNil {_pos select 2}) then
@@ -33,19 +33,24 @@ CUPSIGNAL_addSignal =
 		_pos = AGLtoASL _pos;
 	};
 	_index = -1;
+	
+	_signalArray = [_pos, _freq, _maxRange, _minRange, _directional];
+	
+	if (isNil {_forwards}) then
+	{
+		_signalArray = _signalArray + [nil, _angle, _args];
+	} else
+	{
+		_signalArray  = _signalArray + [_forwards, _angle, _args];
+	};
+	
 	private "_i";
 	_i = 0;
 	while {_index < 0} do
 	{
 		if (isNil {CUPSIGNAL_signalList select _i}) then
 		{
-			if (isNil {_forwards}) then
-			{
-				CUPSIGNAL_signalList set [_i, [_pos, _freq, _maxRange, _minRange, _directional, nil, _angle]];
-			} else
-			{
-				CUPSIGNAL_signalList set [_i, [_pos, _freq, _maxRange, _minRange, _directional, _forwards, _angle]];
-			};
+			CUPSIGNAL_signalList set [_i, _signalArray];
 			_index = _i;
 		};
 		_i = _i + 1;
@@ -69,11 +74,11 @@ Takes array formatted from signalList and calculates signal strength for local p
 **/
 CUPSIGNAL_calculateStrengthFromArray = 
 {
-	params ["_pos", "_freq", "_maxRange", "_minRange", "_directional", "_forwards", "_angle"];
+	params ["_pos", "_freq", "_maxRange", "_minRange", "_directional", "_forwards", "_angle", "_args"];
 	private ["_distance","_strength"];
 	if (typeName _pos == "CODE") then
 	{
-		_pos = _this call _pos;
+		_pos = _args call _pos;
 	};
 	if CUPSIGNAL_3D then
 	{
@@ -95,12 +100,12 @@ CUPSIGNAL_calculateStrengthFromArray =
 	
 	if (typeName _maxRange == "CODE") then
 	{
-		_maxRange = _this call _maxRange;
+		_maxRange = _args call _maxRange;
 	};
 	
 	if (typeName _minRange == "CODE") then
 	{
-		_minRange = _this call _minRange;
+		_minRange = _args call _minRange;
 	};
 	
 	_strength = 0;
@@ -112,7 +117,7 @@ CUPSIGNAL_calculateStrengthFromArray =
 			_coneCheck = true;
 		} else
 		{
-			_coneCheck = [_pos, _forwards, _angle, _this] call CUPSIGNAL_coneCheck;
+			_coneCheck = [_pos, _forwards, _angle, _args] call CUPSIGNAL_coneCheck;
 		};
 		
 		if (_coneCheck) then
@@ -120,7 +125,7 @@ CUPSIGNAL_calculateStrengthFromArray =
 			
 			if (typeName _freq == "CODE") then
 			{
-				_freq = _this call _freq;
+				_freq = _args call _freq;
 			};
 			
 			if (_distance > _minRange) then
@@ -130,7 +135,7 @@ CUPSIGNAL_calculateStrengthFromArray =
 				
 				if (typeName _directional == "CODE") then
 				{
-					_directional = _this call _directional;
+					_directional = _args call _directional;
 				};
 				
 				if (_directional) then
@@ -165,16 +170,16 @@ Also passed the full signal array as parameter 3, to be passed into the forwards
 **/
 CUPSIGNAL_coneCheck = 
 {
-	params ["_pos", "_forwards", "_angle", "_signalArray"];
+	params ["_pos", "_forwards", "_angle", "_args"];
 	private ["_return", "_dirDiff"];
 	if (typeName _forwards == "CODE") then
 	{
-		_forwards = _signalArray call _forwards; 
+		_forwards = _args call _forwards; 
 	};
 	
 	if (typeName _angle == "CODE") then
 	{
-		_angle = _signalArray call _angle;
+		_angle = _args call _angle;
 	};
 	
 	if (typeName _forwards == "SCALAR") then

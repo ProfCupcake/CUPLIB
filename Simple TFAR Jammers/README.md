@@ -28,7 +28,7 @@ Add it to your mission by copying the "cupjam" folder into your mission folder, 
 
 Add a jammer using the following command:- 
 
-`index = [pos, maxRange, minRange, direction, angle] call CUPJAM_addJammer`
+`index = [pos, maxRange, minRange, direction, angle, args] call CUPJAM_addJammer`
 
 `pos` is the position of the jammer. This can either be a constant position, or it can be an object. 
 
@@ -40,7 +40,7 @@ Add a jammer using the following command:-
 
 `angle` is the angle of the cone in degrees, if the above `direction` is set. Note that the actual cone angle is double this number (think radius vs diameter). Default 60.
 
-For more advanced applications, you can pass code as any of the above parameters. It will be run with an array parameter as follows: `[pos, maxRange, minRange, signalIndex, direction, angle]`. `signalIndex` is the index of the CUPSIGNAL signal linked to this jammer (or nil, if CUPSIGNAL integration is disabled); all other parameters are as defined in the `addJammer` call. Note that the code will run locally for each player. 
+For more advanced applications, you can pass code as any of the above parameters. This is where `args` is used; it is passed into any code parameter (thus, accessible via `_this` inside). `args` is set to `[]` (empty array) by default. Note that the code will run locally for each player. 
 
 The returned value - assigned to `index` in the above example - is the index identifying the jammer in the script, to be used for the removal of jammers with the following:-
 

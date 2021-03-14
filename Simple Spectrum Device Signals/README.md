@@ -38,7 +38,7 @@ There are a number of global parameters you can change at the top of cupsignal_i
 
 Add a signal using the following command:-
 
-`index = [pos, freq, maxRange, minRange, directional, forwardsDirection, angle] call CUPSIGNAL_addSignal;`
+`index = [pos, freq, maxRange, minRange, directional, forwardsDirection, angle, args] call CUPSIGNAL_addSignal;`
 
 `pos` is the position of the signal. This can be either a position (above ground level; if the height is omitted, it defaults to 0), or an object (the signal will be attached to the object). 
 
@@ -58,7 +58,7 @@ Note that the defaults for the above can be changed in cupsignal_init.sqf.
 
 IMPORTANT NOTE FOR MULTIPLAYER: Make sure you only add signals on a single machine! Ideally, this should be the server, so you should add these inside an `isServer` block. You can add them on the client-side, but only do that if you know for sure that it will only run locally. 
 
-For more advanced applications, you can also pass code blocks as any of the parameters above. These will be run with the signal array as their parameter (i.e. these, what you are setting right now), and should return a valid value for that parameter. Note that they will run locally for each player. 
+For more advanced applications, you can also pass code blocks as any of the parameters above. These will have the value of `args` passed to them, and should return a valid value for that parameter. `args` is set to `[]` (empty array) by default. Note that they will run locally for each player. 
 
 The return value - shown above as being assigned to `index` - is the index of the newly-created signal. This is only required if you intend to remove the signal later, via the following command:-
 

@@ -14,6 +14,9 @@ CUPSIGNAL_defaultMaxRange = 500;
 // Default minimum range for newly-created signals, in metres
 CUPSIGNAL_defaultMinRange = 5;
 
+// Default angle for conical signals
+CUPSIGNAL_defaultConeAngle = 60;
+
 // HashMap that defines the frequency ranges for each antenna type
 // key is the classname of the antenna, values are an array: [minimum, maximum]
 CUPSIGNAL_freqRanges = createHashMapFromArray [["muzzle_antenna_01_f",[78,89]], ["muzzle_antenna_02_f",[390,500]], ["muzzle_antenna_03_f",[433,433]]];

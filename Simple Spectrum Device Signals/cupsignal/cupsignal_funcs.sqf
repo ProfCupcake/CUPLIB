@@ -17,11 +17,12 @@ Parameters:-
 	+ receiver directionality (if true, signal strength weakens if looking away from signal; if false, signal strength is not affected by direction); default is set in init
 	+ forwards direction; if this is set, then the signal is simulated as a cone facing this direction. Nil by default (i.e. disabled). This can be either a number, defining a constant azimuth; a vector, defining a constant 3D direction; or a code block, which should return one of the previous two arguments. Cone behaviour depends on the type of direction set: if it's a number it is 2D (ignores height), if it's a vector it is 3D. This parameter description is very long, thanks for reading it. I hope it at least partially makes sense. 
 	+ signal angle; only matters if the forwards direction is set. Defines the angle of the signal cone, in degrees. Note that it works like radius, so the actual angle is double this number. Default 60. 
+	+ arbitrary; allows you to pass arguments in to be used by any of the other parameters, if they are code
 Returns an index pointing to this signal in the list
 **/
 CUPSIGNAL_addSignal = 
 {
-	params ["_pos", "_freq", ["_maxRange",CUPSIGNAL_defaultMaxRange], ["_minRange",CUPSIGNAL_defaultMinRange], ["_directional",CUPSIGNAL_directional], "_forwards", ["_angle", 60]];
+	params ["_pos", "_freq", ["_maxRange",CUPSIGNAL_defaultMaxRange], ["_minRange",CUPSIGNAL_defaultMinRange], ["_directional",CUPSIGNAL_directional], "_forwards", ["_angle", CUPSIGNAL_defaultConeAngle]];
 	private "_index";
 	if (typeName _pos == "ARRAY") then
 	{

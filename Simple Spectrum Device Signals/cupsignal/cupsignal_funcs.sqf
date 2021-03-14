@@ -14,12 +14,14 @@ Parameters:-
 	- frequency of signal
 	+ maximum range (signal will attenuate to 0 at this range); default is set in init
 	+ minimum range (within this range, signal is 100% strength); default is set in init
-	+ directionality (if true, signal strength weakens if looking away from signal; if false, signal strength is not affected by direction); default is set in init
+	+ receiver directionality (if true, signal strength weakens if looking away from signal; if false, signal strength is not affected by direction); default is set in init
+	+ forwards direction; if this is set, then the signal is simulated as a cone facing this direction. Nil by default (i.e. disabled). This can be either a number, defining a constant azimuth; a vector, defining a constant 3D direction; or a code block, which should return one of the previous two arguments. Cone behaviour depends on the type of direction set: if it's a number it is 2D (ignores height), if it's a vector it is 3D. This parameter description is very long, thanks for reading it. I hope it at least partially makes sense. 
+	+ signal angle; only matters if the forwards direction is set. Defines the angle of the signal cone, in degrees. Note that it works like radius, so the actual angle is double this number. Default 60. 
 Returns an index pointing to this signal in the list
 **/
 CUPSIGNAL_addSignal = 
 {
-	params ["_pos", "_freq", ["_maxRange",CUPSIGNAL_defaultMaxRange], ["_minRange",CUPSIGNAL_defaultMinRange], ["_directional",CUPSIGNAL_directional]];
+	params ["_pos", "_freq", ["_maxRange",CUPSIGNAL_defaultMaxRange], ["_minRange",CUPSIGNAL_defaultMinRange], ["_directional",CUPSIGNAL_directional], "_forwards", ["_angle", 60]];
 	private "_index";
 	if (typeName _pos == "ARRAY") then
 	{
@@ -27,7 +29,7 @@ CUPSIGNAL_addSignal =
 		{
 			_pos = [_pos select 0, _pos select 1, 0];
 		};
-		_pos = ASLtoAGL _pos;
+		_pos = AGLtoASL _pos;
 	};
 	_index = -1;
 	private "_i";
@@ -36,7 +38,13 @@ CUPSIGNAL_addSignal =
 	{
 		if (isNil {CUPSIGNAL_signalList select _i}) then
 		{
-			CUPSIGNAL_signalList set [_i, [_pos, _freq, _maxRange, _minRange, _directional]];
+			if (isNil {_forwards}) then
+			{
+				CUPSIGNAL_signalList set [_i, [_pos, _freq, _maxRange, _minRange, _directional, nil, _angle]];
+			} else
+			{
+				CUPSIGNAL_signalList set [_i, [_pos, _freq, _maxRange, _minRange, _directional, _forwards, _angle]];
+			};
 			_index = _i;
 		};
 		_i = _i + 1;
@@ -60,8 +68,12 @@ Takes array formatted from signalList and calculates signal strength for local p
 **/
 CUPSIGNAL_calculateStrengthFromArray = 
 {
-	params ["_pos", "_freq", "_maxRange", "_minRange", "_directional"];
+	params ["_pos", "_freq", "_maxRange", "_minRange", "_directional", "_forwards", "_angle"];
 	private ["_distance","_strength"];
+	if (typeName _pos == "CODE") then
+	{
+		_pos = _this call _pos;
+	};
 	if CUPSIGNAL_3D then
 	{
 		if (typeName _pos == "ARRAY") then
@@ -75,41 +87,81 @@ CUPSIGNAL_calculateStrengthFromArray =
 	{
 		_distance = player distance2D _pos;
 	};
+	if (typeName _pos == "OBJECT") then
+	{
+		_pos = getPosASL _pos;
+	};
 	_strength = 0;
 	if (_distance < _maxRange) then
 	{
-		if (_distance > _minRange) then
+		private "_coneCheck";
+		_coneCheck = false;
+		if (isNil {_forwards}) then
 		{
-			_strength = (1-(_distance-_minRange)/(_maxRange-_minRange));
-			_strength = _strength^CUPSIGNAL_distanceExponent;
-			if (_directional) then
+			_coneCheck = true;
+		} else
+		{
+			_coneCheck = [_pos, _forwards, _angle, _this] call CUPSIGNAL_coneCheck;
+		};
+		
+		if (_coneCheck) then
+		{
+			if (_distance > _minRange) then
 			{
-				private ["_dirDiff","_dirCoeff"];
-				if CUPSIGNAL_3D then 
+				_strength = (1-(_distance-_minRange)/(_maxRange-_minRange));
+				_strength = _strength^CUPSIGNAL_distanceExponent;
+				if (_directional) then
 				{
-					if (typeName _pos == "OBJECT") then
+					private ["_dirDiff","_dirCoeff"];
+					if CUPSIGNAL_3D then 
 					{
-						_pos = getPosASL _pos;
+						_dirDiff = vectorMagnitude ((player weaponDirection currentWeapon player) vectorDiff (eyePos player vectorFromTo _pos));
+						_dirCoeff = (1-(_dirDiff/CUPSIGNAL_maxAngleVM)) max 0;
+					} else
+					{
+						_dirDiff = abs ((player getDir _pos) - (direction player));
+						_dirCoeff = (1-(_dirDiff/CUPSIGNAL_maxAngle)) max 0;
 					};
 					
-					_dirDiff = vectorMagnitude ((player weaponDirection currentWeapon player) vectorDiff (eyePos player vectorFromTo _pos));
-					_dirCoeff = (1-(_dirDiff/CUPSIGNAL_maxAngleVM)) max 0;
-				} else
-				{
-					_dirDiff = abs ((player getDir _pos) - (direction player));
-					_dirCoeff = (1-(_dirDiff/CUPSIGNAL_maxAngle)) max 0;
+					_dirCoeff = _dirCoeff^CUPSIGNAL_directionExponent;
+					_strength = _strength*_dirCoeff;
 				};
-				
-				_dirCoeff = _dirCoeff^CUPSIGNAL_directionExponent;
-				_strength = _strength*_dirCoeff;
+			} else 
+			{
+				_strength = 1;
 			};
-		} else 
-		{
-			_strength = 1;
 		};
 		_strength = _strength*CUPSIGNAL_maxStrength;
 	};
 	_strength
+};
+
+/**
+Given a position (PositionASL), a direction (number, vector, or code returning those), and an angle, checks that the local player is in that cone
+Also passed the full signal array as parameter 3, to be passed into the forwards angle code
+**/
+CUPSIGNAL_coneCheck = 
+{
+	params ["_pos", "_forwards", "_angle", "_signalArray"];
+	private ["_return", "_dirDiff"];
+	if (typeName _forwards == "CODE") then
+	{
+		_forwards = _signalArray call _forwards; 
+	};
+	
+	if (typeName _forwards == "SCALAR") then
+	{
+		_dirDiff = abs (_forwards - (_pos getDir player));
+		_return = (_dirDiff < _angle);
+	};
+	
+	if (typeName _forwards == "ARRAY") then
+	{
+		_dirDiff = vectorMagnitude (_forwards vectorDiff (_pos vectorFromTo eyePos player));
+		_return = (_dirDiff < (_angle/90));
+	};
+	
+	_return
 };
 
 /**

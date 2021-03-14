@@ -15,12 +15,12 @@ Features include:
 - A whole bunch of options for customisation
 
 Features that are planned to be added:
-- Support for Zeus Remote Control
+- Implement Spectrum Device "transmit" function, which will add a signal for others to track
 
 Features I'd *like* to add (but can't guarantee):
-- Implement Spectrum Device "transmit" function, which will add a signal for others to track
 - Implement ACRE integration
 - Better documentation; this readme is a mess
+- Support for Zeus Remote Control
 
 Features that are not included, and not planned:
 - Terrain/obstacles blocking signals

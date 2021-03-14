@@ -11,10 +11,10 @@ Features include:
 - Optional CUPSIGNAL integration, allowing jammers to be tracked down with the Spectrum Device
 
 Features that are planned to be added:
-- Support for Zeus Remote Control
+- Full CUPSIGNAL/Spectrum Device integration that adds a functional jammer antenna
 
 Features I'd *like* to add (but can't guarantee):
-- Full CUPSIGNAL/Spectrum Device integration that adds a functional jammer antenna
+- Support for Zeus Remote Control
 - ACRE support
 - Better documentation
 

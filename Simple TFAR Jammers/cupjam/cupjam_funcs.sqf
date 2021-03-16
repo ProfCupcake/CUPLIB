@@ -21,10 +21,13 @@ Parameters:
 - min range, default 25
 - direction, default nil
 - angle, default 60
+- arbitrary arguments to be passed into script parameters
+- signal support - should only be used to override
+- signal freq - see above
 **/
 CUPJAM_addJammer = 
 {
-	params ["_pos", ["_maxRange", 250], ["_minRange", 25], "_direction", ["_angle", 60], ["_args", []]];
+	params ["_pos", ["_maxRange", 250], ["_minRange", 25], "_direction", ["_angle", 60], ["_args", []], ["_signalSupport", CUPJAM_signalSupport], ["_signalFrequency", CUPJAM_signalFrequency]];
 	private ["_index", "_signalIndex", "_jamArray"];
 	if (typeName _pos == "ARRAY") then
 	{
@@ -36,14 +39,14 @@ CUPJAM_addJammer =
 	_index = -1;
 	private "_i";
 	_i = 0;
-	if (CUPJAM_signalSupport) then
+	if (_signalSupport) then
 	{
 		if (isNil {_direction}) then
 		{
-			_signalIndex = [_pos, CUPJAM_signalFrequency, _maxRange*CUPJAM_signalMaxRangeMult, _minRange*CUPJAM_signalMinRangeMult, CUPSIGNAL_directional, nil, CUPSIGNAL_defaultConeAngle, _args] call CUPSIGNAL_addSignal;
+			_signalIndex = [_pos, _signalFrequency, _maxRange*CUPJAM_signalMaxRangeMult, _minRange*CUPJAM_signalMinRangeMult, CUPSIGNAL_directional, nil, CUPSIGNAL_defaultConeAngle, _args] call CUPSIGNAL_addSignal;
 		} else
 		{
-			_signalIndex = [_pos, CUPJAM_signalFrequency, _maxRange*CUPJAM_signalMaxRangeMult, _minRange*CUPJAM_signalMinRangeMult, CUPSIGNAL_directional, _direction, _angle, _args] call CUPSIGNAL_addSignal;
+			_signalIndex = [_pos, _signalFrequency, _maxRange*CUPJAM_signalMaxRangeMult, _minRange*CUPJAM_signalMinRangeMult, CUPSIGNAL_directional, _direction, _angle, _args] call CUPSIGNAL_addSignal;
 		};
 	};
 	
@@ -182,6 +185,6 @@ CUPJAM_tickLoop =
 			player setVariable ["tf_receivingDistanceMultiplicator", 1000000];
 		};
 		player setVariable ["tf_sendingDistanceMultiplicator", _jamFactor];
-		sleep 1;
+		sleep CUPJAM_tickDelay;
 	};
 };

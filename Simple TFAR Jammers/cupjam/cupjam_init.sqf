@@ -16,6 +16,10 @@ CUPJAM_signalMinRangeMult = 0.5;
 // As above, but for maximum range
 CUPJAM_signalMaxRangeMult = 2;
 
+// Delay between script updates, in seconds
+// Increase for slightly better performance, decrease for quicker response to movement etc.
+CUPJAM_tickDelay = 0.1;
+
 //////////////////////////////////////////////////////////////
 
 call compile preprocessfilelinenumbers "cupjam\cupjam_funcs.sqf";

@@ -260,7 +260,7 @@ CUPSIGNAL_tickLoop =
 			} forEach CUPSIGNAL_signalList;
 			missionNamespace setVariable ["#EM_Values", _values];
 		};
-	sleep 0.1;
+	sleep CUPSIGNAL_tickDelay;
 	};
 };
 
@@ -320,6 +320,162 @@ CUPSIGNAL_enableTFARIntegration =
 			};
 		};
 	}, player] call TFAR_fnc_addEventHandler;
+};
+
+/**
+Adds the action to the player to toggle Spectrum transmit mode
+**/
+CUPSIGNAL_addTransmitAction = 
+{
+	params [["_maxRange", 100], ["_minRange", 1], ["_angle", 60]];
+	CUPSIGNAL_transmitMaxRange = _maxRange;
+	CUPSIGNAL_transmitMinRange = _minRange;
+	CUPSIGNAL_transmitAngle = _angle;
+	private "_actionIndex";
+	CUPSIGNAL_actionCondition = {"hgun_esd_" in currentWeapon player};
+	_actionIndex = player addAction ["Toggle Transmit Mode", CUPSIGNAL_toggleTransmit, nil, 1.5, false, true, "defaultAction", "call CUPSIGNAL_actionCondition"];
+	player setVariable ["CUPSIGNAL_transmitActionIndex", _actionIndex];
+	player addEventHandler ["Respawn", CUPSIGNAL_handleRespawn];
+};
+
+CUPSIGNAL_setupJammerAntenna = 
+{
+	params [["_maxRange", 250], ["_minRange", 25], ["_angle", 60], ["_antenna", "muzzle_antenna_03_f"]];
+	CUPSIGNAL_jammerMaxRange = _maxRange;
+	CUPSIGNAL_jammerMinRange = _minRange;
+	CUPSIGNAL_jammerAngle = _angle;
+	CUPSIGNAL_jammerAntenna = _antenna;
+};
+
+/**
+Respawn EH, used to re-set the action after a respawn
+**/
+CUPSIGNAL_handleRespawn = 
+{
+	params["_unit", "_corpse"];
+	private "_actionIndex";
+	_corpse removeAction (_corpse getVariable "CUPSIGNAL_transmitActionIndex");
+	_actionIndex = _unit addAction ["Toggle Transmit Mode", CUPSIGNAL_toggleTransmit, nil, 1.5, false, true, "defaultAction", "call CUPSIGNAL_actionCondition"]; 
+	_unit setVariable ["CUPSIGNAL_transmitActionIndex", _actionIndex];
+};
+
+/**
+Toggles transmission mode
+**/
+CUPSIGNAL_toggleTransmit = 
+{
+	if (isNil {player getVariable "CUPSIGNAL_transmitSignalIndex"}) then
+	{
+		if ("hgun_esd_" in currentWeapon player) then
+		{
+			if (CUPSIGNAL_debug) then {systemChat "weapon valid";};
+			_antenna = handgunItems player select 0;
+			if (_antenna != "") then
+			{
+				if (CUPSIGNAL_debug) then {systemChat "antenna valid";};
+				private ["_freqRange", "_minFreq", "_maxFreq", "_transFreq"];
+				_freqRange = CUPSIGNAL_freqRanges get _antenna;
+				_minFreq = missionNamespace getVariable "#EM_SelMin";
+				_maxFreq = missionNamespace getVariable "#EM_SelMax";
+				_transFreq = (_minFreq + _maxFreq)/2;
+				if ((_transFreq > (_freqRange select 0)) and {_transFreq < (_freqRange select 1)}) then
+				{
+					if (CUPSIGNAL_debug) then {systemChat "frequency valid";};
+					private "_signalIndex";
+					if (!(isNil {CUPSIGNAL_jammerAntenna}) and {_antenna == CUPSIGNAL_jammerAntenna}) then
+					{
+						_signalIndex = [{eyePos _this}, CUPSIGNAL_jammerMaxRange, CUPSIGNAL_jammerMinRange, {_this weaponDirection currentWeapon _this}, CUPSIGNAL_jammerAngle, player, true, _transFreq] call CUPJAM_addJammer;
+					} else
+					{
+						_signalIndex = [{eyePos _this}, _transFreq, CUPSIGNAL_transmitMaxRange, CUPSIGNAL_transmitMinRange, true, {_this weaponDirection currentWeapon _this}, CUPSIGNAL_transmitAngle, player] call CUPSIGNAL_addSignal;
+					};
+					player setVariable ["CUPSIGNAL_transmitSignalIndex", _signalIndex];
+					missionNamespace setVariable ["#EM_Transmit", true];
+					[_transFreq, _antenna] spawn CUPSIGNAL_transmitCheckLoop;
+				};
+			};
+		};
+	} else
+	{
+		if (!(isNil {CUPSIGNAL_jammerAntenna}) and {(handgunItems player select 0) == CUPSIGNAL_jammerAntenna}) then
+		{
+			(player getVariable "CUPSIGNAL_transmitSignalIndex") call CUPJAM_removeJammer;
+			player setVariable ["CUPSIGNAL_transmitSignalIndex", nil];
+		} else
+		{
+			(player getVariable "CUPSIGNAL_transmitSignalIndex") call CUPSIGNAL_removeSignal;
+			player setVariable ["CUPSIGNAL_transmitSignalIndex", nil];
+		};
+		missionNamespace setVariable ["#EM_Transmit", false];
+	};
+};
+
+/**
+Continuously checks that the Spectrum transmission is still valid, and ends it if not
+Parameters:
+	- transmit frequency
+**/
+CUPSIGNAL_transmitCheckLoop = 
+{
+	params ["_transFreq", "_transAntenna"];
+	private ["_isValid", "_curAntenna", "_curFreq", "_minFreq", "_maxFreq"];
+	if (CUPSIGNAL_debug) then {systemChat "check loop starting";};
+	_isValid = true;
+	while {_isValid} do
+	{
+		if (isNil {player getVariable "CUPSIGNAL_transmitSignalIndex"}) then
+		{
+			_isValid = false;
+			if (CUPSIGNAL_debug) then {systemChat "variable nil";};
+		} else
+		{
+			if !("hgun_esd_" in currentWeapon player) then
+			{
+				_isValid = false;
+				if (CUPSIGNAL_debug) then {systemChat "weapon changed";};
+			} else
+			{
+				_curAntenna = handgunItems player select 0;
+				if (_curAntenna != _transAntenna) then
+				{
+					_isValid = false;
+					if (CUPSIGNAL_debug) then {systemChat "antenna changed";};
+				} else
+				{
+					_minFreq = missionNamespace getVariable "#EM_SelMin";
+					_maxFreq = missionNamespace getVariable "#EM_SelMax";
+					_curFreq = (_minFreq + _maxFreq)/2;
+					if (_curFreq != _transFreq) then
+					{
+						_isValid = false;
+						if (CUPSIGNAL_debug) then {systemChat "freq changed";};
+					} else
+					{
+						if (CUPSIGNAL_debug) then {hintSilent format ["Transmission still valid.\nTrans Freq: %1\nSel Freq:%2",_transFreq, _curFreq];};
+					};
+				};
+			};
+		};
+		sleep CUPSIGNAL_tickDelay;
+	};
+	if (CUPSIGNAL_debug) then 
+	{
+		hintSilent "";
+		systemChat "check loop broken";
+	};
+	if !(isNil {player getVariable "CUPSIGNAL_transmitSignalIndex"}) then
+	{
+		if (!(isNil {CUPSIGNAL_jammerAntenna}) and {_transAntenna == CUPSIGNAL_jammerAntenna}) then
+		{
+			(player getVariable "CUPSIGNAL_transmitSignalIndex") call CUPJAM_removeJammer;
+			player setVariable ["CUPSIGNAL_transmitSignalIndex", nil]; 
+		} else
+		{
+			(player getVariable "CUPSIGNAL_transmitSignalIndex") call CUPSIGNAL_removeSignal;
+			player setVariable ["CUPSIGNAL_transmitSignalIndex", nil];
+		};
+		missionNamespace setVariable ["#EM_Transmit", false];
+	};
 };
 
 /**

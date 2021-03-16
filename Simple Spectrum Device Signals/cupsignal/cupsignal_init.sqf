@@ -17,16 +17,27 @@ CUPSIGNAL_defaultMinRange = 5;
 // Default angle for conical signals
 CUPSIGNAL_defaultConeAngle = 60;
 
+// Defines the width of the frequency selector, in MHz
+CUPSIGNAL_selectionWidth = 1;
+
 // HashMap that defines the frequency ranges for each antenna type
 // key is the classname of the antenna, values are an array: [minimum, maximum]
-CUPSIGNAL_freqRanges = createHashMapFromArray [["muzzle_antenna_01_f",[78,89]], ["muzzle_antenna_02_f",[390,500]], ["muzzle_antenna_03_f",[433,433]]];
-//For reference:-
-// antenna 01 = military
-// antenna 02 = experimental
-// antenna 03 = jamming
+CUPSIGNAL_freqRanges = createHashMapFromArray [
+	["muzzle_antenna_01_f", [78, 89]], // military antenna
+	["muzzle_antenna_02_f", [390, 500]], // experimental antenna
+	["muzzle_antenna_03_f", [433 - (CUPSIGNAL_selectionWidth/2), 433 + (CUPSIGNAL_selectionWidth/2)]]]; //jamming antenna (set so that it selects 433 only by defaulk)
 
 // If the antenna cannot be found in the above HashMap, default to this frequency range
 CUPSIGNAL_defaultFreqRange = [78,89];
+
+// Max range of Spectrum Device transmit mode signal, in metres
+CUPSIGNAL_transmitMaxRange = 100;
+
+// Min range of transmit
+CUPSIGNAL_transmitMinRange = 1;
+
+// Angle of transmission cone
+CUPSIGNAL_transmitAngle = 60;
 
 // Exponent for strength over distance. 
 // At 1, strength is adjusted linearly over distance. 
@@ -37,6 +48,10 @@ CUPSIGNAL_distanceExponent = 1;
 
 // Same as above, but for direction
 CUPSIGNAL_directionExponent = 2;
+
+// Delay between script updates, in seconds
+// Increase for slightly better performance, decrease for quicker response to movement etc.
+CUPSIGNAL_tickDelay = 0.1;
 
 // Maximum strength of signals. Doesn't really change anything other than the numbers shown on the Spectrum display. 
 // This may break things if set to a value below 0. 
@@ -55,7 +70,7 @@ missionNamespace setVariable ["#EM_FMax", 0];
 missionNamespace setVariable ["#EM_SMin", 0];
 missionNamespace setVariable ["#EM_SMax", CUPSIGNAL_maxStrength];
 missionNamespace setVariable ["#EM_SelMin", 0];
-missionNamespace setVariable ["#EM_SelMax", 0.5];
+missionNamespace setVariable ["#EM_SelMax", CUPSIGNAL_selectionWidth];
 
 call compile preprocessfilelinenumbers "cupsignal\cupsignal_funcs.sqf";
 

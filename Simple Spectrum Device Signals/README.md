@@ -94,7 +94,7 @@ Enabling the jamming function is similarly simple:
 
 `[maxRange, minRange, angle, antenna] call CUPSIGNAL_setupJammerAntenna;`
 
-This will setup the jammer antenna so that, if you transmit with it, it will actually function as a radio jammer. This requires [CUPJAM](https://github.com/ProfCupcake/CUPLIB/tree/master/Simple%20TFAR%20Jammers) and the above `addTransmitAction`. Without CUPJAM, it will break, and without `addTransmitFunction`, it just won't do anything. 
+This will setup the jammer antenna so that, if you transmit with it, it will actually function as a radio jammer. This requires [CUPJAM](https://github.com/ProfCupcake/CUPLIB/tree/master/Simple%20TFAR%20Jammers) and the above `addTransmitAction`. Without CUPJAM, it will break, and without `addTransmitAction`, it just won't do anything. 
 
 The parameters are the same as above; max and min ranges and angle for the jammer, defaulting to `[250, 25, 60]`. The jammer will still emit a signal at the selected frequency. The parameter `antenna` defines which antenna is counted as the jammer antenna; this is set to `muzzle_antenna_03_f` by default (the jammer antenna) and should probably be left that way. 
 

@@ -8,10 +8,10 @@ Features include:
 - Within a certain range, radios are completely useless
 - Multiple jammers can overlap, applying their effects multiplicatively
 - Sync'd for multiplayer
-- Optional CUPSIGNAL integration, allowing jammers to be tracked down with the Spectrum Device
+- Optional [CUPSIGNAL](https://github.com/ProfCupcake/CUPLIB/tree/master/Simple%20Spectrum%20Device%20Signals) integration, allowing jammers to be tracked down with the Spectrum Device
 
 Features that are planned to be added:
-- Full CUPSIGNAL/Spectrum Device integration that adds a functional jammer antenna
+- 
 
 Features I'd *like* to add (but can't guarantee):
 - Support for Zeus Remote Control

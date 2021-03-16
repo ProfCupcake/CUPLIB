@@ -16,9 +16,6 @@ Features include:
 - Optional TFAR integration; active radios will appear as trackable signals
 - A whole bunch of options for customisation
 
-Features that are planned to be added:
-- 
-
 Features I'd *like* to add (but can't guarantee):
 - Implement ACRE integration
 - Better documentation; this readme is a mess

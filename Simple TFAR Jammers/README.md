@@ -10,9 +10,6 @@ Features include:
 - Sync'd for multiplayer
 - Optional [CUPSIGNAL](https://github.com/ProfCupcake/CUPLIB/tree/master/Simple%20Spectrum%20Device%20Signals) integration, allowing jammers to be tracked down with the Spectrum Device
 
-Features that are planned to be added:
-- 
-
 Features I'd *like* to add (but can't guarantee):
 - Support for Zeus Remote Control
 - ACRE support

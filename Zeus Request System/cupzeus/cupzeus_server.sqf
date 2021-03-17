@@ -28,6 +28,7 @@ CUPZEUS_handleRequest =
 	_uid = getPlayerUID _unit;
 	_unitStr = str _unit;
 	if ((_client == 2) or
+		{(admin _client) > 0} or
 		{_unit in CUPZEUS_curatorList} or
 		{_unitStr in CUPZEUS_curatorList} or
 		{_uid in CUPZEUS_curatorList}) then
@@ -67,7 +68,7 @@ CUPZEUS_grantZeus =
 		case 2: {(format ["Zeus granted to %1", name _this]) remoteExec ["systemChat", 0];};
 	};
 	CUPZEUS_clientRespawnEH = true;
-	owner _this publicVariableClient "CUPZEUS_clientRespawnEH";
+	(owner _this) publicVariableClient "CUPZEUS_clientRespawnEH";
 };
 
 CUPZEUS_denyZeus = 
@@ -93,7 +94,7 @@ CUPZEUS_handleRelinquish =
 		case 2: {(format ["%1 relinquished Zeus", name _unit]) remoteExec ["systemChat", 0];};
 	};
 	CUPZEUS_clientRespawnEH = false;
-	owner _this publicVariableClient "CUPZEUS_clientRespawnEH";
+	(owner _unit) publicVariableClient "CUPZEUS_clientRespawnEH";
 };
 
 "CUPZEUS_relinquishZeus" addPublicVariableEventHandler CUPZEUS_handleRelinquish;

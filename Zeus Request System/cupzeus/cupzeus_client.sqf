@@ -12,7 +12,7 @@ CUPZEUS_doRelinquishZeus =
 
 CUPZEUS_requestCondition = 
 {
-	isNull (getAssignedCuratorLogic player)
+	(isNil {getAssignedCuratorLogic player})
 };
 
 CUPZEUS_addRequestAction = 
@@ -62,15 +62,21 @@ CUPZEUS_handleAdminRequest =
 
 "CUPZEUS_adminRequest" addPublicVariableEventHandler CUPZEUS_handleAdminRequest;
 
+CUPZEUS_handleRespawn = 
+{
+	CUPZEUS_respawnRequest = _this;
+	publicVariableServer "CUPZEUS_respawnRequest";
+};
+
 CUPZEUS_handleClientRespawnEH = 
 {
 	params ["", "_add"];
 	if (_add) then
 	{
-		player setVariable ["CUPZEUS_respawnEH", player addEventHandler ["Respawn", {CUPZEUS_respawnRequest = _this; publicVariableServer "CUPZEUS_respawnRequest";}]];
+		player setVariable ["CUPZEUS_respawnEH", player addEventHandler ["Respawn", CUPZEUS_handleRespawn]];
 	} else
 	{
-		player removeEventHandler (player getVariable "CUPZEUS_respawnEH");
+		player removeEventHandler ["Respawn", player getVariable "CUPZEUS_respawnEH"];
 	};
 };
 

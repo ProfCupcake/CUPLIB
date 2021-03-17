@@ -8,6 +8,9 @@ Features:
 - Allowed curators can be defined by selected units or by player IDs
 - Automatically handles respawns and disconnects
 
+Known Issues:
+- This script potentially won't play well with other Zeus methods (including the #adminLogged)
+
 ## Installation
 
 Add it to your mission by copying the "cupzeus" folder. In your `initServer.sqf`, add the following line:-
@@ -38,7 +41,7 @@ Finally, you can use player UIDs. This is the more secure way, as it will allow 
 
 `CUPZEUS_curatorList = [12345678901234567890, 98765432109876543210];`
 
-You can mix-and-match all 3 types. 
+You can mix-and-match all 3 types. In addition to the units set in the `curatorList`, admins and/or local hosts will be allowed to take Zeus. 
 
 ## Adding Request Action
 

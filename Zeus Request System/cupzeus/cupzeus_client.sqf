@@ -22,6 +22,18 @@ CUPZEUS_addRequestAction =
 	_object addAction [_relinquishText, CUPZEUS_doRelinquishZeus, nil, 1.5, true, true, "", "!(call CUPZEUS_requestCondition)"];
 };
 
+CUPZEUS_doRequestList = 
+{
+	CUPZEUS_requestList = player;
+	publicVariableServer "CUPZEUS_requestList";
+};
+
+CUPZEUS_addListAction = 
+{
+	params ["_object", ["_listText", "List Current Zeus Operators"]];
+	_object addAction [_listText, CUPZEUS_doRequestList, nil, 1.5, true, true, "true"];
+};
+
 CUPZEUS_sendAdminResponse = 
 {
 	params ["", "", "", "_response"];
@@ -49,3 +61,17 @@ CUPZEUS_handleAdminRequest =
 };
 
 "CUPZEUS_adminRequest" addPublicVariableEventHandler CUPZEUS_handleAdminRequest;
+
+CUPZEUS_handleClientRespawnEH = 
+{
+	params ["", "_add"];
+	if (_add) then
+	{
+		player setVariable ["CUPZEUS_respawnEH", player addEventHandler ["Respawn", {CUPZEUS_respawnRequest = _this; publicVariableServer "CUPZEUS_respawnRequest";}]];
+	} else
+	{
+		player removeEventHandler (player getVariable "CUPZEUS_respawnEH");
+	};
+};
+
+"CUPZEUS_clientRespawnEH" addPublicVariableEventHandler CUPZEUS_handleClientRespawnEH;

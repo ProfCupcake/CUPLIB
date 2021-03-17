@@ -66,8 +66,8 @@ CUPZEUS_grantZeus =
 		case 1: {"Zeus granted" remoteExec ["systemChat", _this];};
 		case 2: {(format ["Zeus granted to %1", name _this]) remoteExec ["systemChat", 0];};
 	};
-	_respawnEH = _this addEventHandler ["Respawn", CUPZEUS_handleRespawn];
-	_this setVariable ["CUPZEUS_respawnEH", _respawnEH];
+	CUPZEUS_clientRespawnEH = true;
+	owner _this publicVariableClient "CUPZEUS_clientRespawnEH";
 };
 
 CUPZEUS_denyZeus = 
@@ -92,7 +92,8 @@ CUPZEUS_handleRelinquish =
 		case 1: {"Zeus relinquished" remoteExec ["systemChat", _unit];};
 		case 2: {(format ["%1 relinquished Zeus", name _unit]) remoteExec ["systemChat", 0];};
 	};
-	_unit removeEventHandler ["Respawn", _unit getVariable "CUPZEUS_respawnEH"];
+	CUPZEUS_clientRespawnEH = false;
+	owner _this publicVariableClient "CUPZEUS_clientRespawnEH";
 };
 
 "CUPZEUS_relinquishZeus" addPublicVariableEventHandler CUPZEUS_handleRelinquish;
@@ -137,14 +138,17 @@ CUPZEUS_handleAdminResponse =
 
 "CUPZEUS_adminResponse" addPublicVariableEventHandler CUPZEUS_handleAdminResponse;
 
-CUPZEUS_handleRespawn = 
+CUPZEUS_handleRespawnServer = 
 {
-	params ["_unit", "_corpse"];
+	params ["", "_params"];
+	_params params ["_unit", "_corpse"];
 	private "_curator";
 	_curator = getAssignedCuratorLogic _corpse;
 	unassignCurator _curator; 
 	_unit assignCurator _curator;
 };
+
+"CUPZEUS_respawnRequest" addPublicVariableEventHandler CUPZEUS_handleRespawnServer;
 
 CUPZEUS_handleDisconnect = 
 {
@@ -153,9 +157,27 @@ CUPZEUS_handleDisconnect =
 	{
 		if (getAssignedCuratorLogic _unit in units CUPZEUS_curatorModuleGroup) then
 		{
-			["", _unit] call CUPZEUS_handleRelinquish;
+			private "_curator";
+			_curator = getAssignedCuratorLogic _unit;
+			unassignCurator _curator;
+			deleteVehicle _curator;
 		};
 	};
 };
 
 addMissionEventHandler ["HandleDisconnect", CUPZEUS_handleDisconnect];
+
+CUPZEUS_handleListRequest = 
+{
+	params ["", "_unit"];
+	if ((isNil "CUPZEUS_curatorModuleGroup") or {(count (units CUPZEUS_curatorModuleGroup)) == 0}) exitWith
+	{
+		"No active Zeus operators" remoteExec ["systemChat", _unit];
+	};
+	"Active Zeus operators:" remoteExec ["systemChat", _unit];
+	{
+		(format ["%1", (name (getAssignedCuratorUnit _x))]) remoteExec ["systemChat", _unit];
+	} forEach (units CUPZEUS_curatorModuleGroup);
+};
+
+"CUPZEUS_requestList" addPublicVariableEventHandler CUPZEUS_handleListRequest;

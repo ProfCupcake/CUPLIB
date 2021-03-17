@@ -8,8 +8,6 @@ Features:
 - Allowed curators can be defined by selected units or by player IDs
 - Automatically handles respawns and disconnects
 
-Planned:
-
 ## Installation
 
 Add it to your mission by copying the "cupzeus" folder. In your `initServer.sqf`, add the following line:-
@@ -52,3 +50,10 @@ Adding a request action to any object is a simple matter of calling the followin
 
 `requestText` and `relinquishText` are both optional; they define the text that will be displayed for the actions. By default, they are set to simple `"Request Zeus"` and `"Relinquish Zeus"`, respectively. 
 
+## Adding List Action
+
+There is also an optional action, which simply shows a list of the currently active curators. It can be added with the following command: 
+
+`[object, listText] call CUPZEUS_addListAction;`
+
+As above, `object` is the object to which the action will be attached, and `listText` is the optional action text, defaulting to `"List Current Zeus Operators"`.

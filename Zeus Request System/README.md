@@ -6,9 +6,9 @@ Features:
 - Dead Simple setup
 - Minimal interface through actions only
 - Allowed curators can be defined by selected units or by player IDs
+- Automatically handles respawns
 
 Planned:
-- Respawn handler
 - Disconnect handler
 
 ## Installation

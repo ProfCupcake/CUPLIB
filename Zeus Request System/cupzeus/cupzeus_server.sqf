@@ -41,7 +41,7 @@ CUPZEUS_handleRequest =
 			_admin = call CUPZEUS_findAdmin;
 			if !(isNil "_admin") then
 			{
-				"Sending zeus request to admin..." remoteExec ["systemChat", _unit];
+				"Sending Zeus request to admin..." remoteExec ["systemChat", _unit];
 				[_unit, _admin] call CUPZEUS_sendAdminRequest;
 			} else
 			{
@@ -56,7 +56,7 @@ CUPZEUS_handleRequest =
 
 CUPZEUS_grantZeus = 
 {
-	private ["_curator"];
+	private ["_curator", "_respawnEH"];
 	if (isNil "CUPZEUS_curatorModuleGroup") then {CUPZEUS_curatorModuleGroup = createGroup sideLogic;};
 	_curator = CUPZEUS_curatorModuleGroup createUnit ["ModuleCurator_F", _this, [], 1, "NONE"];
 	_curator setVariable ["Addons", 3, true];
@@ -66,6 +66,8 @@ CUPZEUS_grantZeus =
 		case 1: {"Zeus granted" remoteExec ["systemChat", _this];};
 		case 2: {(format ["Zeus granted to %1", name _this]) remoteExec ["systemChat", 0];};
 	};
+	_respawnEH = _this addEventHandler ["Respawn", CUPZEUS_handleRespawn];
+	_this setVariable ["CUPZEUS_respawnEH", _respawnEH];
 };
 
 CUPZEUS_denyZeus = 
@@ -90,6 +92,7 @@ CUPZEUS_handleRelinquish =
 		case 1: {"Zeus relinquished" remoteExec ["systemChat", _unit];};
 		case 2: {(format ["%1 relinquished Zeus", name _unit]) remoteExec ["systemChat", 0];};
 	};
+	_unit removeEventHandler ["Respawn", _unit getVariable "CUPZEUS_respawnEH"];
 };
 
 "CUPZEUS_relinquishZeus" addPublicVariableEventHandler CUPZEUS_handleRelinquish;
@@ -133,3 +136,12 @@ CUPZEUS_handleAdminResponse =
 };
 
 "CUPZEUS_adminResponse" addPublicVariableEventHandler CUPZEUS_handleAdminResponse;
+
+CUPZEUS_handleRespawn = 
+{
+	params ["_unit", "_corpse"];
+	private "_curator";
+	_curator = getAssignedCuratorLogic _corpse;
+	unassignCurator _curator; 
+	_unit assignCurator _curator;
+};

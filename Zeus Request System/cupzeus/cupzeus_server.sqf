@@ -56,7 +56,7 @@ CUPZEUS_handleRequest =
 
 CUPZEUS_grantZeus = 
 {
-	private ["_curator", "_respawnEH"];
+	private ["_curator", "_respawnEH", "_disconnectEH"];
 	if (isNil "CUPZEUS_curatorModuleGroup") then {CUPZEUS_curatorModuleGroup = createGroup sideLogic;};
 	_curator = CUPZEUS_curatorModuleGroup createUnit ["ModuleCurator_F", _this, [], 1, "NONE"];
 	_curator setVariable ["Addons", 3, true];
@@ -145,3 +145,17 @@ CUPZEUS_handleRespawn =
 	unassignCurator _curator; 
 	_unit assignCurator _curator;
 };
+
+CUPZEUS_handleDisconnect = 
+{
+	params ["_unit", "_id", "_uid", "_name"];
+	if !(isNil "CUPZEUS_curatorModuleGroup") then
+	{
+		if (getAssignedCuratorLogic _unit in units CUPZEUS_curatorModuleGroup) then
+		{
+			["", _unit] call CUPZEUS_handleRelinquish;
+		};
+	};
+};
+
+addMissionEventHandler ["HandleDisconnect", CUPZEUS_handleDisconnect];

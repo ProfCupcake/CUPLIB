@@ -12,7 +12,7 @@ CUPZEUS_doRelinquishZeus =
 
 CUPZEUS_requestCondition = 
 {
-	(isNil {getAssignedCuratorLogic player})
+	isNull (getAssignedCuratorLogic player)
 };
 
 CUPZEUS_addRequestAction = 

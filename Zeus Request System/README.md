@@ -9,7 +9,8 @@ Features:
 - Automatically handles respawns and disconnects
 
 Known Issues:
-- This script potentially won't play well with other Zeus methods (including the #adminLogged)
+- This script potentially won't play well with other Zeus methods (including the #adminLogged); I'd recommend *only* using this script if you are to use it at all
+- For some reason, the delay on the "list" action isn't working
 
 ## Installation
 

@@ -285,12 +285,15 @@ CUPSIGNAL_enableTFARIntegration =
 		_minRange = CUPSIGNAL_minRadioSignalRange;
 		if (_radioUsed == 0) then
 		{
+			/*
 			_maxRange = getNumber (configfile >> "CfgWeapons" >> _radio >> "tf_range");
 			_maxRange = _maxRange * (player getVariable "tf_sendingDistanceMultiplicator");
 			_maxRange = _maxRange * CUPSIGNAL_SWrangeMult;
+			*/
+			
+			_maxRange = false call CUPSIGNAL_calculateRadioRange;
 			
 			_minRange = _minRange * CUPSIGNAL_SWrangeMult;
-			
 			
 			if (_additionalChannel) then
 			{
@@ -302,9 +305,13 @@ CUPSIGNAL_enableTFARIntegration =
 		};
 		if (_radioUsed == 1) then
 		{
+			/*
 			_maxRange = getNumber (configFile >> "CfgVehicles" >> typeOf (_radio select 0) >> "tf_range");
 			_maxRange = _maxRange * (player getVariable "tf_sendingDistanceMultiplicator");
 			_maxRange = _maxRange * CUPSIGNAL_LRrangeMult;
+			*/
+			
+			_maxRange = true call CUPSIGNAL_calculateRadioRange;
 			
 			_minRange = _minRange * CUPSIGNAL_LRrangeMult;
 			
@@ -320,15 +327,39 @@ CUPSIGNAL_enableTFARIntegration =
 		{
 			if (_buttonDown) then
 			{
-				if (CUPSIGNAL_debug) then {systemChat format ["%1 started transmitting! Freq: %2, Radio: %3, Range: %4",_unit,_freq,_radio,_maxRange];};
+				if (CUPSIGNAL_debug) then {systemChat format ["%1 started transmitting! Freq: %2, Radio: %3, Range: %4",_unit,_freq,_radio, _maxRange];};
 				_unit setVariable ["CUPSIGNAL_radioSignalIndex", [_unit, parseNumber _freq, _maxRange, _minRange] call CUPSIGNAL_addSignal];
 			} else
 			{
-				if (CUPSIGNAL_debug) then {systemChat format ["%1 stopped transmitting! Freq: %2, Radio: %3, Range: %4",_unit,_freq,_radio,_maxRange];};
+				if (CUPSIGNAL_debug) then {systemChat format ["%1 stopped transmitting! Freq: %2, Radio: %3, Range: %4",_unit,_freq,_radio, _maxRange];};
 				_unit getVariable "CUPSIGNAL_radioSignalIndex" call CUPSIGNAL_removeSignal;
 			};
 		};
 	}, player] call TFAR_fnc_addEventHandler;
+};
+
+/**
+Calculates range for given radio from radio config, sendingDistanceMultiplicator, and SWrangeMult
+Requires TFARintegration to have been run first
+Parameter: true if using LR, false if using SW
+**/
+CUPSIGNAL_calculateRadioRange = 
+{
+	private ["_range", "_radio"];
+	if (_this) then
+	{
+		_radio = call TFAR_fnc_activeLrRadio;
+		_range = getNumber (configFile >> "CfgVehicles" >> typeOf (_radio select 0) >> "tf_range");
+		_range = _range * (player getVariable "tf_sendingDistanceMultiplicator");
+		_range = _range * CUPSIGNAL_LRrangeMult;
+	} else
+	{
+		_radio = call TFAR_fnc_activeSwRadio;
+		_range = getNumber (configfile >> "CfgWeapons" >> _radio >> "tf_range");
+		_range = _range * (player getVariable "tf_sendingDistanceMultiplicator");
+		_range = _range * CUPSIGNAL_SWrangeMult;
+	};
+	_range
 };
 
 /**

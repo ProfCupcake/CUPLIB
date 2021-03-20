@@ -265,24 +265,97 @@ CUPSIGNAL_tickLoop =
 };
 
 /**
-Enables TFAR integration
+New version of TFAR integration, with ranges set to actual radio range
+Parameters:
+- SW range multiplier, default 1
+- LR range multiplier, default 1
+- radio minimum range, default 1
+**/
+CUPSIGNAL_enableTFARIntegration = 
+{
+	params [["_SWrangeMult", 1], ["_LRrangeMult", 1], ["_minRange", 1]];
+	CUPSIGNAL_SWrangeMult = _SWrangeMult;
+	CUPSIGNAL_LRrangeMult = _LRrangeMult;
+	CUPSIGNAL_minRadioSignalRange = _minRange;
+	
+	["radioSpectrumSignalEH", "OnTangent", 
+	{
+		params ["_unit", "_radio", "_radioUsed", "_additionalChannel", "_buttonDown"];
+		private ["_freq","_minRange","_maxRange"];
+		_minRange = CUPSIGNAL_minRadioSignalRange;
+		if (_radioUsed == 0) then
+		{
+			_maxRange = getNumber (configfile >> "CfgWeapons" >> _radio >> "tf_range");
+			_maxRange = _maxRange * (player getVariable "tf_sendingDistanceMultiplicator");
+			_maxRange = _maxRange * CUPSIGNAL_SWrangeMult;
+			
+			_minRange = _minRange * CUPSIGNAL_SWrangeMult;
+			
+			
+			if (_additionalChannel) then
+			{
+				_freq = [_radio, (_radio call TFAR_fnc_getAdditionalSwChannel)+1] call TFAR_fnc_getChannelFrequency;
+			} else
+			{
+				_freq = (call TFAR_fnc_activeSwRadio) call TFAR_fnc_getSwFrequency;
+			};
+		};
+		if (_radioUsed == 1) then
+		{
+			_maxRange = getNumber (configFile >> "CfgVehicles" >> typeOf (_radio select 0) >> "tf_range");
+			_maxRange = _maxRange * (player getVariable "tf_sendingDistanceMultiplicator");
+			_maxRange = _maxRange * CUPSIGNAL_LRrangeMult;
+			
+			_minRange = _minRange * CUPSIGNAL_LRrangeMult;
+			
+			if (_additionalChannel) then
+			{
+				_freq = [_radio, (_radio call TFAR_fnc_getAdditionalLrChannel)+1] call TFAR_fnc_getChannelFrequency;
+			} else
+			{
+				_freq = (call TFAR_fnc_activeLrRadio) call TFAR_fnc_getLrFrequency;
+			};
+		};
+		if (!isNil {_freq}) then
+		{
+			if (_buttonDown) then
+			{
+				if (CUPSIGNAL_debug) then {systemChat format ["%1 started transmitting! Freq: %2, Radio: %3, Range: %4",_unit,_freq,_radio,_maxRange];};
+				_unit setVariable ["CUPSIGNAL_radioSignalIndex", [_unit, parseNumber _freq, _maxRange, _minRange] call CUPSIGNAL_addSignal];
+			} else
+			{
+				if (CUPSIGNAL_debug) then {systemChat format ["%1 stopped transmitting! Freq: %2, Radio: %3, Range: %4",_unit,_freq,_radio,_maxRange];};
+				_unit getVariable "CUPSIGNAL_radioSignalIndex" call CUPSIGNAL_removeSignal;
+			};
+		};
+	}, player] call TFAR_fnc_addEventHandler;
+};
+
+/**
+Old version of TFAR integration, with preset ranges
+Kept for no particular reason, really
 Paramters:
 - min SW range, default 1
 - max SW range, default 500
 - min LR range, default 5
 - max LR range, default 2500
 **/
-CUPSIGNAL_enableTFARIntegration = 
+CUPSIGNAL_enableTFARIntegrationOld = 
 {
 	params [["_minSWrange", 1], ["_maxSWrange", 500], ["_minLRrange", 5], ["_maxLRrange", 2500]];
+	CUPSIGNAL_minSWrange = _minSWrange;
+	CUPSIGNAL_maxSWrange = _maxSWrange;
+	CUPSIGNAL_minLRrange = _minLRrange;
+	CUPSIGNAL_maxLRrange = _maxLRrange;
+	
 	["radioSpectrumSignalEH", "OnTangent", 
 	{
 		params ["_unit", "_radioClass", "_radioUsed", "_additionalChannel", "_buttonDown"];
 		private ["_freq","_minRange","_maxRange"];
 		if (_radioUsed == 0) then
 		{
-			_minRange = _minSWrange;
-			_maxRange = _maxSWrange;
+			_minRange = CUPSIGNAL_minSWrange;
+			_maxRange = CUPSIGNAL_maxSWrange;
 			if (_additionalChannel) then
 			{
 				private "_radio";
@@ -295,8 +368,8 @@ CUPSIGNAL_enableTFARIntegration =
 		};
 		if (_radioUsed == 1) then
 		{
-			_minRange = _minLRrange;
-			_maxRange = _maxLRrange;
+			_minRange = CUPSIGNAL_minLRrange;
+			_maxRange = CUPSIGNAL_maxLRrange;
 			if (_additionalChannel) then
 			{
 				private "_radio";
@@ -311,11 +384,11 @@ CUPSIGNAL_enableTFARIntegration =
 		{
 			if (_buttonDown) then
 			{
-				if (CUPSIGNAL_debug) then {systemChat format ["%1 started transmitting! Freq: %2",_unit,_freq];};
-				_unit setVariable ["CUPSIGNAL_radioSignalIndex", [_unit, parseNumber _freq] call CUPSIGNAL_addSignal];
+				if (CUPSIGNAL_debug) then {systemChat format ["%1 started transmitting! Freq: %2, Radio: %3, Range: %4",_unit,_freq,_radioClass,_maxRange];};
+				_unit setVariable ["CUPSIGNAL_radioSignalIndex", [_unit, parseNumber _freq, _maxRange, _minRange] call CUPSIGNAL_addSignal];
 			} else
 			{
-				if (CUPSIGNAL_debug) then {systemChat format ["%1 stopped transmitting! Freq: %2",_unit,_freq];};
+				if (CUPSIGNAL_debug) then {systemChat format ["%1 started transmitting! Freq: %2, Radio: %3, Range: %4",_unit,_freq,_radioClass,_maxRange];};
 				_unit getVariable "CUPSIGNAL_radioSignalIndex" call CUPSIGNAL_removeSignal;
 			};
 		};

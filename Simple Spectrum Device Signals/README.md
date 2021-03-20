@@ -96,14 +96,16 @@ Enabling the jamming function is similarly simple:
 
 This will setup the jammer antenna so that, if you transmit with it, it will actually function as a radio jammer. This requires [CUPJAM](https://github.com/ProfCupcake/CUPLIB/tree/master/Simple%20TFAR%20Jammers) and the above `addTransmitAction`. Without CUPJAM, it will break, and without `addTransmitAction`, it just won't do anything. 
 
-The parameters are the same as above; max and min ranges and angle for the jammer, defaulting to `[250, 25, 60]`. The jammer will still emit a signal at the selected frequency. The parameter `antenna` defines which antenna is counted as the jammer antenna; this is set to `muzzle_antenna_03_f` by default (the jammer antenna) and should probably be left that way. 
+The parameters are the same as above; max and min ranges and angle for the jammer, defaulting to `[250, 25, 60]`. The jammer will still emit a signal at the selected frequency. The parameter `antenna` defines which antenna is counted as the jammer antenna; this is set to `"muzzle_antenna_03_f"` by default (the jammer antenna) and should probably be left that way. 
 
 ## TFAR Integration
 
 Enabling the TFAR integration is also quite simple:
 
-`[minSWrange, maxSWrange, minLRrange, maxLRrange] call CUPSIGNAL_enableTFARIntegration;`
+`[SWrangeMultiplier, LRrangeMultiplier, minRange] call CUPSIGNAL_enableTFARIntegration;`
 
 Obviously, this requires TFAR to function, and must be called on every client. 
 
-The parameters should be self-explanatory; they are the minimum and maximum ranges for short-wave and long-range radios respectively (diver radios are ignored). They are all optional, defaulting to `[1, 500, 5, 2500]`.
+The range of the signal is equal to the range of the radio used, multiplied by either `SWrangeMultiplier` or `LRrangeMultiplier`, depending on the kind of radio. They are both 1 by default. Note that this range takes into account the TFAR range multiplier, allowing this to work properly alongside anything that affects radio ranges (such as CUPJAM). 
+
+`minRange` is the base minimum range of radio signals. It is 1 by default, and is multiplied by the multipliers above. 

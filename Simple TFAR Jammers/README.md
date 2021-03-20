@@ -15,6 +15,9 @@ Features I'd *like* to add (but can't guarantee):
 - ACRE support
 - Better documentation
 
+Known Issues:
+- If you have any other scripts that change the sending/receiving distances of TFAR radios, this will override them. 
+
 ## Installation
 
 Add it to your mission by copying the "cupjam" folder into your mission folder, and adding the following to your init.sqf:

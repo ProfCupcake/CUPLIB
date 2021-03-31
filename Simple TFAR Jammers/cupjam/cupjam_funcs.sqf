@@ -73,6 +73,10 @@ CUPJAM_addJammer =
 	_index
 };
 
+/**
+Remove jammer
+Parameter is jammer index
+**/
 CUPJAM_removeJammer = 
 {
 	params ["_i"];

@@ -2,9 +2,18 @@ CUPRIG_doRigAntenna =
 {
 	params ["_target", "_caller", "_actionId", "_args"];
 	_args params ["_range"];
-	[_target, _range] call TFAR_antennas_fnc_initRadioTower;
+	_jipID = [_target, _range] remoteExec ["TFAR_antennas_fnc_initRadioTower", 0, true];
+	_killedEH = _target addMPEventHandler ["MPKilled", CUPRIG_antennaKilledEH];
 	_target setVariable ["CUPRIG_rigged", true, true];
+	_target setVariable ["CUPRIG_killedEH", _killedEH, true];
+	_target setVariable ["CUPRIG_jipID", _jipID, true];
 	hint format ["Antenna enabled\nRange: %1m", _range];
+};
+
+CUPRIG_antennaKilledEH = 
+{
+	params ["_unit"];
+	[_unit] call TFAR_antennas_fnc_deleteRadioTower;
 };
 
 CUPRIG_canRigAntenna = 
@@ -23,8 +32,10 @@ CUPRIG_canReenableAntenna =
 CUPRIG_doDisableAntenna = 
 {
 	params ["_target", "_caller", "_actionId", "_args"];
-	[_target] call TFAR_antennas_fnc_deleteRadioTower;
+	[_target] remoteExec ["TFAR_antennas_fnc_deleteRadioTower", 0];
+	remoteExec ["", _target getVariable "CUPRIG_jipID"];
 	_target setVariable ["CUPRIG_rigged", false, true];
+	_target removeMPEventHandler ["MPKilled", (_target getVariable "CUPRIG_killedEH")];
 };
 
 CUPRIG_canDisableAntenna = 

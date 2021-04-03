@@ -30,6 +30,11 @@ CUPRIG_rangeArray = [
 
 call compile preprocessfilelinenumbers "cuprig\cuprig_funcs.sqf";
 
+publicVariable "CUPRIG_canRigAntenna";
+publicVariable "CUPRIG_canReenableAntenna";
+publicVariable "CUPRIG_canDisableAntenna";
+publicVariable "CUPRIG_antennaKilledEH";
+
 CUPRIG_rangeMap = createHashMapFromArray CUPRIG_rangeArray;
 
 _transmitterList = nearestTerrainObjects [[worldSize/2, worldSize/2], ["TRANSMITTER"], worldSize, false]; 

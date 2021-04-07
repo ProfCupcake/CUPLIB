@@ -26,7 +26,8 @@ CUPZEUS_curatorLimit = 0;
 
 CUPZEUS_handleRequest = 
 {
-	params ["", "_unit"];
+	//params ["", "_unit"];
+	_unit = _this;
 	private ["_client", "_uid"];
 	_client = owner _unit;
 	_uid = getPlayerUID _unit;
@@ -76,8 +77,10 @@ CUPZEUS_grantZeus =
 	*/
 	_respawnEH = _unit addMPEventHandler ["MPRespawn", {
 		//systemChat "respawn EH fired";
-		CUPZEUS_respawnRequest = _this;
-		publicVariableServer "CUPZEUS_respawnRequest";
+		//CUPZEUS_respawnRequest = _this;
+		//publicVariableServer "CUPZEUS_respawnRequest";
+		
+		_this remoteExec ["CUPZEUS_handleRespawnServer", 2];
 	}];
 	_unit setVariable ["CUPZEUS_respawnEH", _respawnEH];
 	switch (_displayMessages) do
@@ -120,11 +123,12 @@ CUPZEUS_denyZeus =
 	};
 };
 
-"CUPZEUS_requestZeus" addPublicVariableEventHandler CUPZEUS_handleRequest;
+//"CUPZEUS_requestZeus" addPublicVariableEventHandler CUPZEUS_handleRequest;
 
 CUPZEUS_handleRelinquish = 
 {
-	params ["", "_unit"];
+	//params ["", "_unit"];
+	_unit = _this;
 	private ["_curator"];
 	_curator = getAssignedCuratorLogic _unit;
 	unassignCurator _curator;
@@ -142,7 +146,7 @@ CUPZEUS_handleRelinquish =
 	};
 };
 
-"CUPZEUS_relinquishZeus" addPublicVariableEventHandler CUPZEUS_handleRelinquish;
+//"CUPZEUS_relinquishZeus" addPublicVariableEventHandler CUPZEUS_handleRelinquish;
 
 /**
 Returns the client ID of logged/voted-in admin, or nil if there is no admin
@@ -165,14 +169,17 @@ CUPZEUS_findAdmin =
 CUPZEUS_sendAdminRequest = 
 {
 	params ["_unit", "_admin"];
-	CUPZEUS_adminRequest = _unit;
-	_admin publicVariableClient "CUPZEUS_adminRequest";
+	//CUPZEUS_adminRequest = _unit;
+	//_admin publicVariableClient "CUPZEUS_adminRequest";
+	
+	_unit remoteExec ["CUPZEUS_handleAdminRequest", _admin];
 };
 
 CUPZEUS_handleAdminResponse = 
 {
-	params ["", "_response"];
-	_response params ["_unit", "_grant", "_admin"];
+	//params ["", "_response"];
+	//_response 
+	params ["_unit", "_grant", "_admin"];
 	if ((admin owner _admin) > 0) then
 	{
 		if (_grant) then
@@ -187,13 +194,14 @@ CUPZEUS_handleAdminResponse =
 	};
 };
 
-"CUPZEUS_adminResponse" addPublicVariableEventHandler CUPZEUS_handleAdminResponse;
+//"CUPZEUS_adminResponse" addPublicVariableEventHandler CUPZEUS_handleAdminResponse;
 
 CUPZEUS_handleRespawnServer = 
 {
 	//systemChat format ["Respawn request received: %1", _this];
-	params ["", "_params"];
-	_params params ["_unit", "_corpse"];
+	//params ["", "_params"];
+	//_params 
+	params ["_unit", "_corpse"];
 	/**
 	private "_curator";
 	_curator = getAssignedCuratorLogic _corpse;
@@ -207,7 +215,7 @@ CUPZEUS_handleRespawnServer =
 	};
 };
 
-"CUPZEUS_respawnRequest" addPublicVariableEventHandler CUPZEUS_handleRespawnServer;
+//"CUPZEUS_respawnRequest" addPublicVariableEventHandler CUPZEUS_handleRespawnServer;
 
 CUPZEUS_handleDisconnect = 
 {
@@ -228,7 +236,8 @@ addMissionEventHandler ["HandleDisconnect", CUPZEUS_handleDisconnect];
 
 CUPZEUS_handleListRequest = 
 {
-	params ["", "_unit"];
+	//params ["", "_unit"];
+	_unit = _this; 
 	if ((isNil "CUPZEUS_curatorModuleGroup") or {(count (units CUPZEUS_curatorModuleGroup)) <= 1}) exitWith
 	{
 		"No active Zeus operators" remoteExec ["systemChat", _unit];
@@ -242,7 +251,7 @@ CUPZEUS_handleListRequest =
 	} forEach (units CUPZEUS_curatorModuleGroup);
 };
 
-"CUPZEUS_requestList" addPublicVariableEventHandler CUPZEUS_handleListRequest;
+//"CUPZEUS_requestList" addPublicVariableEventHandler CUPZEUS_handleListRequest;
 
 /**
 Attempts to delete Zeus module
@@ -256,7 +265,7 @@ CUPZEUS_attemptModuleDelete =
 		if (isNil "CUPZEUS_inactiveModuleGroup") then
 		{
 			CUPZEUS_inactiveModuleGroup = createGroup sideLogic;
-			CUPZEUS_inactiveModuleGroup createUnit ["Logic", _unit, [], 1, "NONE"]; // create dummy unit to prevent group garbage collection
+			CUPZEUS_inactiveModuleGroup createUnit ["Logic", _this, [], 1, "NONE"]; // create dummy unit to prevent group garbage collection
 		};
 		_this removeCuratorEditableObjects [curatorEditableObjects _this, true];
 		[_this] joinSilent CUPZEUS_inactiveModuleGroup;

@@ -14,15 +14,18 @@ CUPZEUS_listTimeout = 0;
 
 CUPZEUS_doRequestZeus = 
 {
-	CUPZEUS_requestZeus = player;
-	publicVariableServer "CUPZEUS_requestZeus";
+	//CUPZEUS_requestZeus = player;
+	//publicVariableServer "CUPZEUS_requestZeus";
+	player remoteExec ["CUPZEUS_handleRequest", 2];
 	CUPZEUS_requestTimeout = time + CUPZEUS_requestDelay;
 };
 
 CUPZEUS_doRelinquishZeus = 
 {
-	CUPZEUS_relinquishZeus = player;
-	publicVariableServer "CUPZEUS_relinquishZeus";
+	//CUPZEUS_relinquishZeus = player;
+	//publicVariableServer "CUPZEUS_relinquishZeus";
+	
+	player remoteExec ["CUPZEUS_handleRelinquish", 2];
 };
 
 CUPZEUS_requestCondition = 
@@ -50,8 +53,9 @@ CUPZEUS_addRequestAction =
 
 CUPZEUS_doRequestList = 
 {
-	CUPZEUS_requestList = player;
-	publicVariableServer "CUPZEUS_requestList";
+	//CUPZEUS_requestList = player;
+	//publicVariableServer "CUPZEUS_requestList";
+	player remoteExec ["CUPZEUS_handleListRequest", 2];
 	CUPZEUS_listTimeout = time + CUPZEUS_listDelay;
 };
 
@@ -76,15 +80,17 @@ CUPZEUS_sendAdminResponse =
 {
 	params ["", "", "", "_response"];
 	_response params ["_unit", "_grant"];
-	CUPZEUS_adminResponse = [_unit, _grant, player];
-	publicVariableServer "CUPZEUS_adminResponse";
+	//CUPZEUS_adminResponse = [_unit, _grant, player];
+	//publicVariableServer "CUPZEUS_adminResponse";
+	[_unit, _grant, player] remoteExec ["CUPZEUS_handleAdminResponse", 2];
 	player removeAction (CUPZEUS_actionMapGrant get (str _unit));
 	player removeAction (CUPZEUS_actionMapDeny get (str _unit));
 };
 
 CUPZEUS_handleAdminRequest = 
 {
-	params ["", "_unit"];
+	//params ["", "_unit"];
+	_unit = _this;
 	if (isNil "CUPZEUS_actionMapGrant") then
 	{
 		CUPZEUS_actionMapGrant = createHashMap;
@@ -98,32 +104,7 @@ CUPZEUS_handleAdminRequest =
 	};
 };
 
-"CUPZEUS_adminRequest" addPublicVariableEventHandler CUPZEUS_handleAdminRequest;
-
-CUPZEUS_handleRespawn = 
-{
-	systemChat format ["CUPZEUS debug: respawn EH fired with parameters %1", _this];
-	CUPZEUS_respawnRequest = _this;
-	publicVariableServer "CUPZEUS_respawnRequest";
-};
-
-/*
-CUPZEUS_handleClientRespawnEH = 
-{
-	params ["", "_add"];
-	if (_add) then
-	{
-		player setVariable ["CUPZEUS_respawnEH", player addEventHandler ["Respawn", CUPZEUS_handleRespawn]];
-		systemChat "CUPZEUS Debug: added respawn EH";
-	} else
-	{
-		player removeEventHandler ["Respawn", player getVariable "CUPZEUS_respawnEH"];
-		systemChat "CUPZEUS Debug: removed respawn EH";
-	};
-};
-
-
-"CUPZEUS_clientRespawnEH" addPublicVariableEventHandler CUPZEUS_handleClientRespawnEH;*/
+//"CUPZEUS_adminRequest" addPublicVariableEventHandler CUPZEUS_handleAdminRequest;
 
 CUPZEUS_handleKilled = 
 {

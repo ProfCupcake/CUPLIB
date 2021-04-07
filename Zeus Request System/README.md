@@ -11,7 +11,6 @@ Features:
 Known Issues:
 - This script potentially won't play well with other Zeus methods (including the #adminLogged); I'd recommend *only* using this script if you are to use it at all
 - For some reason, the delay on the "list" action isn't working
-- For the sake of end-user simplicity, this relies heavily on an outdated, deprecated command. It works just fine for now, but only as long as Bohemia don't remove said command. 
 
 ## Installation
 

@@ -32,72 +32,84 @@ CUPZEUS_curatorLimit = 0;
 //END OF PARAMETERS
 /////////////////////////////////////////////////////////////////////
 
-// Checks given list for the given unit's variable name in both raw and string form, and the player UID of the unit. 
+// Checks given list for the given unit/player in the following formats:-
+// - raw variable
+// - variable name as a string
+// - player UID as a string
+// - player UID as a number
 CUPZEUS_checkList = 
 {
 	params ["_unit", "_list"];
-	
-	if (isNull _unit) exitWith {false};
-	
-	if (count _list < 1) exitWith {false};
 	
 	if (_unit in _list) exitWith {true};
 	
 	if (str _unit in _list) exitWith {true};
 	
 	if (getPlayerUID _unit in _list) exitWith {true};
+	
+	if (parseNumber getPlayerUID _unit in _list) exitWith {true};
+	
+	false
 };
 
 CUPZEUS_handleRequest = 
 {
 	//params ["", "_unit"];
 	_unit = _this;
-	private ["_client", "_uid"];
 	_client = owner _unit;
-	_uid = getPlayerUID _unit;
-	_unitStr = str _unit;
+	if ([_unit, CUPZEUS_curatorBlacklist] call CUPZEUS_checkList) exitWith
+	{
+		[_unit, nil, ": you are blacklisted from Zeus"] call CUPZEUS_denyZeus;
+	};
+	
 	if ((CUPZEUS_curatorLimit > 0) and 
 		{!isNil "CUPZEUS_curatorModuleGroup"} and 
 		{((count units CUPZEUS_curatorModuleGroup) - 1) >= CUPZEUS_curatorLimit}) exitWith
 	{
-		"Denied: Zeus limit reached" remoteExec ["systemChat", _unit];
+		[_unit, nil, ": Zeus limit reached"] call CUPZEUS_denyZeus;
 	};
-	if ((CUPZEUS_openMode) or
-		{_client == 2} or // client is localhost
-		{(admin _client) > 0} or // client is admin
-		{[_unit, CUPZEUS_curatorList] call CUPZEUS_checkList}) then
+	
+	if (CUPZEUS_openMode) exitWith
 	{
-		if ([_unit, CUPZEUS_curatorBlacklist] call CUPZEUS_checkList) then
+		[_unit, nil, ": open Zeus"] call CUPZEUS_grantZeus;
+	};
+	
+	if (_client == 2) exitWith
+	{
+		[_unit, nil, ": server host"] call CUPZEUS_grantZeus;
+	};
+	
+	if ((admin _client) > 0) exitWith
+	{
+		[_unit, nil, ": admin"] call CUPZEUS_grantZeus;
+	};
+	
+	if ([_unit, CUPZEUS_curatorList] call CUPZEUS_checkList) exitWith
+	{
+		[_unit, nil, ": on allowed Zeus list"] call CUPZEUS_grantZeus;
+	};
+	
+	if ((CUPZEUS_adminCanGrant)) then
+	{
+		private "_admin";
+		_admin = call CUPZEUS_findAdmin;
+		if !(isNil "_admin") then
 		{
-			[_unit] call CUPZEUS_denyZeus;
+			"Sending Zeus request to admin..." remoteExec ["systemChat", _unit];
+			[_unit, _admin] call CUPZEUS_sendAdminRequest;
 		} else
 		{
-			[_unit] call CUPZEUS_grantZeus;
+			[_unit, nil, ": you are not on the allowed Zeus list"] call CUPZEUS_denyZeus;
 		};
 	} else
 	{
-		if ((CUPZEUS_adminCanGrant) and {!([_unit, CUPZEUS_curatorBlacklist] call CUPZEUS_checkList)}) then
-		{
-			private "_admin";
-			_admin = call CUPZEUS_findAdmin;
-			if !(isNil "_admin") then
-			{
-				"Sending Zeus request to admin..." remoteExec ["systemChat", _unit];
-				[_unit, _admin] call CUPZEUS_sendAdminRequest;
-			} else
-			{
-				[_unit] call CUPZEUS_denyZeus;
-			};
-		} else
-		{
-			[_unit] call CUPZEUS_denyZeus;
-		};
+		[_unit, nil, ": you are not on the allowed Zeus list"] call CUPZEUS_denyZeus;
 	};
 };
 
 CUPZEUS_grantZeus = 
 {
-	params ["_unit", ["_displayMessages", CUPZEUS_displayMessages]];
+	params ["_unit", ["_displayMessages", CUPZEUS_displayMessages], ["_reason", ""]];
 	private ["_respawnEH"];
 	[_unit] call CUPZEUS_assignCurator;
 	/*
@@ -114,8 +126,8 @@ CUPZEUS_grantZeus =
 	_unit setVariable ["CUPZEUS_respawnEH", _respawnEH];
 	switch (_displayMessages) do
 	{
-		case 1: {"Zeus granted" remoteExec ["systemChat", _unit];};
-		case 2: {(format ["Zeus granted to %1", name _unit]) remoteExec ["systemChat", 0];};
+		case 1: {(format ["Zeus granted%1", _reason]) remoteExec ["systemChat", _unit];};
+		case 2: {(format ["Zeus granted to %1%2", name _unit,_reason]) remoteExec ["systemChat", 0];};
 	};
 };
 
@@ -145,10 +157,10 @@ CUPZEUS_assignCurator =
 
 CUPZEUS_denyZeus = 
 {
-	params ["_unit", ["_displayMessages", CUPZEUS_displayMessages]];
+	params ["_unit", ["_displayMessages", CUPZEUS_displayMessages], ["_reason",""]];
 	if (_displayMessages > 0) then
 	{
-		"Zeus denied" remoteExec ["systemChat", _this];
+		(format ["Zeus denied%1",_reason]) remoteExec ["systemChat", _unit];
 	};
 };
 
@@ -213,12 +225,10 @@ CUPZEUS_handleAdminResponse =
 	{
 		if (_grant) then
 		{
-			"Admin granted request" remoteExec ["systemChat", _unit];
-			[_unit] call CUPZEUS_grantZeus;
+			[_unit, nil, " by admin"] call CUPZEUS_grantZeus;
 		} else
 		{
-			"Admin denied request" remoteExec ["systemChat", _unit];
-			[_unit] call CUPZEUS_denyZeus;
+			[_unit, nil, " by admin"] call CUPZEUS_denyZeus;
 		};
 	};
 };

@@ -18,10 +18,32 @@ CUPJAM_signalMaxRangeMult = 2;
 
 // Delay between script updates, in seconds
 // Increase for slightly better performance, decrease for quicker response to movement etc.
-CUPJAM_tickDelay = 0.1;
+CUPJAM_tickDelay = 0.03;
+
+// Whether or not to use CBA per-frame event handlers
+// If true, will use CBA per-frame handlers for loops
+// If false, will use a manual delay loop
+// If nil, will automatically set itself to true if CBA is installed or false if not. 
+CUPJAM_CBA = nil;
+
+// Defines whether the tickDelay is used when CBA per-frame handlers are enabled
+// If true, script will be delayed by tickDelay as it is without CBA
+// If false, script will run every frame with CBA
+CUPJAM_CBA_useTickDelay = false;
 
 //////////////////////////////////////////////////////////////
 
 call compile preprocessfilelinenumbers "cupjam\cupjam_funcs.sqf";
 
-[] spawn CUPJAM_tickLoop;
+if (isNil "CUPJAM_CBA") then
+{
+	CUPJAM_CBA = !isNil "CBA_fnc_addPerFrameHandler";
+};
+
+if (CUPJAM_CBA) then
+{
+	[CUPJAM_tick, ([0, CUPJAM_tickDelay] select CUPJAM_CBA_useTickDelay)] call CBA_fnc_addPerFrameHandler;
+} else
+{
+	[] spawn CUPJAM_tickLoop;
+};

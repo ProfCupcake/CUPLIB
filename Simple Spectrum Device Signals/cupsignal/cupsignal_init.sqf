@@ -51,7 +51,7 @@ CUPSIGNAL_directionExponent = 2;
 
 // Delay between script updates, in seconds
 // Increase for slightly better performance, decrease for quicker response to movement etc.
-CUPSIGNAL_tickDelay = 0.1;
+CUPSIGNAL_tickDelay = 0.03;
 
 // Maximum strength of signals. Doesn't really change anything other than the numbers shown on the Spectrum display. 
 // This may break things if set to a value below 0. 
@@ -59,6 +59,17 @@ CUPSIGNAL_maxStrength = 100;
 
 // When true, enables debug output
 CUPSIGNAL_debug = false;
+
+// Whether or not to use CBA per-frame event handlers
+// If true, will use CBA per-frame handlers for loops
+// If false, will use a manual delay loop
+// If nil, will automatically set itself to true if CBA is installed or false if not. 
+CUPSIGNAL_CBA = nil;
+
+// Defines whether the tickDelay is used when CBA per-frame handlers are enabled
+// If true, script will be delayed by tickDelay as it is without CBA
+// If false, script will run every frame with CBA
+CUPSIGNAL_CBA_useTickDelay = false;
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 
@@ -74,4 +85,15 @@ missionNamespace setVariable ["#EM_SelMax", CUPSIGNAL_selectionWidth];
 
 call compile preprocessfilelinenumbers "cupsignal\cupsignal_funcs.sqf";
 
-[] spawn CUPSIGNAL_tickLoop;
+if (isNil "CUPSIGNAL_CBA") then
+{
+	CUPSIGNAL_CBA = !isNil "CBA_fnc_addPerFrameHandler";
+};
+
+if (CUPSIGNAL_CBA) then
+{
+	[CUPSIGNAL_tick, ([0, CUPSIGNAL_tickDelay] select CUPSIGNAL_CBA_useTickDelay)] call CBA_fnc_addPerFrameHandler;
+} else
+{
+	[] spawn CUPSIGNAL_tickLoop;
+};

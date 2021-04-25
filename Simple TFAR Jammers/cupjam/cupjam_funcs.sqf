@@ -169,26 +169,31 @@ CUPSIGNAL_coneCheck =
 	
 };**/
 
+CUPJAM_tick = 
+{
+	_jamFactor = 1;
+	{
+		if (!isNil {_x}) then
+		{
+			_jamFactor = _jamFactor*(_x call CUPJAM_calculateJamFactorFromArray);
+		};
+		if (_jamFactor == 0) then {break};
+	} forEach CUPJAM_jammerList;
+	if (_jamFactor > 0) then
+	{
+		player setVariable ["tf_receivingDistanceMultiplicator", 1/_jamFactor];
+	} else
+	{
+		player setVariable ["tf_receivingDistanceMultiplicator", 1000000];
+	};
+	player setVariable ["tf_sendingDistanceMultiplicator", _jamFactor];
+};
+
 CUPJAM_tickLoop = 
 {
-	private ["_jamFactor"];
 	while {true} do
 	{
-		_jamFactor = 1;
-		{
-			if (!isNil {_x}) then
-			{
-				_jamFactor = _jamFactor*(_x call CUPJAM_calculateJamFactorFromArray);
-			};
-		} forEach CUPJAM_jammerList;
-		if (_jamFactor > 0) then
-		{
-			player setVariable ["tf_receivingDistanceMultiplicator", 1/_jamFactor];
-		} else
-		{
-			player setVariable ["tf_receivingDistanceMultiplicator", 1000000];
-		};
-		player setVariable ["tf_sendingDistanceMultiplicator", _jamFactor];
+		call CUPJAM_tick;
 		sleep CUPJAM_tickDelay;
 	};
 };

@@ -5,6 +5,11 @@
 // - player UIDs
 CUPZEUS_curatorList = [];
 
+// List of specifically disallowed curators
+// Only useful if either "adminCanGrant" or "openMode" is true. 
+// In either case, units or players in this list will be automatically rejected
+CUPZEUS_curatorBlacklist = [];
+
 // Message display setting
 // If 0, no messages are displayed
 // If 1, messages are displayed only to player who requested/relinquished zeus
@@ -16,6 +21,9 @@ CUPZEUS_displayMessages = 2;
 // If this is false, or if there is no admin, they will simply have their request denied
 CUPZEUS_adminCanGrant = true;
 
+// If true, curator is completely open to anybody
+CUPZEUS_openMode = false;
+
 // Limit how many curators can be active at a time
 // Set to 0 or less to disable
 CUPZEUS_curatorLimit = 0;
@@ -23,6 +31,22 @@ CUPZEUS_curatorLimit = 0;
 /////////////////////////////////////////////////////////////////////
 //END OF PARAMETERS
 /////////////////////////////////////////////////////////////////////
+
+// Checks given list for the given unit's variable name in both raw and string form, and the player UID of the unit. 
+CUPZEUS_checkList = 
+{
+	params ["_unit", "_list"];
+	
+	if (isNull _unit) exitWith {false};
+	
+	if (count _list < 1) exitWith {false};
+	
+	if (_unit in _list) exitWith {true};
+	
+	if (str _unit in _list) exitWith {true};
+	
+	if (getPlayerUID _unit in _list) exitWith {true};
+};
 
 CUPZEUS_handleRequest = 
 {
@@ -38,16 +62,21 @@ CUPZEUS_handleRequest =
 	{
 		"Denied: Zeus limit reached" remoteExec ["systemChat", _unit];
 	};
-	if ((_client == 2) or // client is localhost
+	if ((CUPZEUS_openMode) or
+		{_client == 2} or // client is localhost
 		{(admin _client) > 0} or // client is admin
-		{_unit in CUPZEUS_curatorList} or
-		{_unitStr in CUPZEUS_curatorList} or
-		{_uid in CUPZEUS_curatorList}) then
+		{[_unit, CUPZEUS_curatorList] call CUPZEUS_checkList}) then
 	{
-		[_unit] call CUPZEUS_grantZeus;
+		if ([_unit, CUPZEUS_curatorBlacklist] call CUPZEUS_checkList) then
+		{
+			[_unit] call CUPZEUS_denyZeus;
+		} else
+		{
+			[_unit] call CUPZEUS_grantZeus;
+		};
 	} else
 	{
-		if (CUPZEUS_adminCanGrant) then
+		if ((CUPZEUS_adminCanGrant) and {!([_unit, CUPZEUS_curatorBlacklist] call CUPZEUS_checkList)}) then
 		{
 			private "_admin";
 			_admin = call CUPZEUS_findAdmin;

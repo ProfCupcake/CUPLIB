@@ -218,49 +218,58 @@ CUPSIGNAL_calculateSignalStrength =
 };
 
 /**
-Central signal update loop
+Single tick code, to be called either from within a loop or a CBA per-frame event handler
+**/
+
+CUPSIGNAL_tick = 
+{
+	if ("hgun_esd_" in currentWeapon player) then
+	{
+		private "_equippedAntenna";
+		_equippedAntenna = handgunItems player select 0;
+		if ((isNil {CUPSIGNAL_equippedAntenna}) or {(_equippedAntenna != CUPSIGNAL_equippedAntenna)}) then
+		{
+			private "_freqRanges";
+			if (_equippedAntenna == "") then
+			{
+				_freqRanges = [0,0];
+			} else
+			{
+				_freqRanges = CUPSIGNAL_freqRanges get _equippedAntenna;
+				if (isNil {_freqRanges}) then
+				{
+					_freqRanges = CUPSIGNAL_defaultFreqRange;
+				};
+			};
+			missionNamespace setVariable ["#EM_FMin", _freqRanges select 0];
+			missionNamespace setVariable ["#EM_FMax", _freqRanges select 1];
+			CUPSIGNAL_equippedAntenna = _equippedAntenna;
+		};
+		private "_values";
+		_values = [];
+		{
+			if !(isNil {_x}) then
+			{
+					_x params ["", "_freq"];
+					private "_strength";
+					_strength = _x call CUPSIGNAL_calculateStrengthFromArray;
+					_values pushBack _freq;
+					_values pushBack _strength;
+			};
+		} forEach CUPSIGNAL_signalList;
+		missionNamespace setVariable ["#EM_Values", _values];
+	};
+};
+
+/**
+Signal update loop
 **/
 CUPSIGNAL_tickLoop = 
 {
 	while {true} do
 	{
-		if ("hgun_esd_" in currentWeapon player) then
-		{
-			private "_equippedAntenna";
-			_equippedAntenna = handgunItems player select 0;
-			if ((isNil {CUPSIGNAL_equippedAntenna}) or {(_equippedAntenna != CUPSIGNAL_equippedAntenna)}) then
-			{
-				private "_freqRanges";
-				if (_equippedAntenna == "") then
-				{
-					_freqRanges = [0,0];
-				} else
-				{
-					_freqRanges = CUPSIGNAL_freqRanges get _equippedAntenna;
-					if (isNil {_freqRanges}) then
-					{
-						_freqRanges = CUPSIGNAL_defaultFreqRange;
-					};
-				};
-				missionNamespace setVariable ["#EM_FMin", _freqRanges select 0];
-				missionNamespace setVariable ["#EM_FMax", _freqRanges select 1];
-				CUPSIGNAL_equippedAntenna = _equippedAntenna;
-			};
-			private "_values";
-			_values = [];
-			{
-				if !(isNil {_x}) then
-				{
-						_x params ["", "_freq"];
-						private "_strength";
-						_strength = _x call CUPSIGNAL_calculateStrengthFromArray;
-						_values pushBack _freq;
-						_values pushBack _strength;
-				};
-			} forEach CUPSIGNAL_signalList;
-			missionNamespace setVariable ["#EM_Values", _values];
-		};
-	sleep CUPSIGNAL_tickDelay;
+		[] call CUPSIGNAL_tick;
+		sleep CUPSIGNAL_tickDelay;
 	};
 };
 

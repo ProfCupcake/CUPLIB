@@ -54,7 +54,6 @@ CUPZEUS_checkList =
 
 CUPZEUS_handleRequest = 
 {
-	//params ["", "_unit"];
 	_unit = _this;
 	_client = owner _unit;
 	if ([_unit, CUPZEUS_curatorBlacklist] call CUPZEUS_checkList) exitWith
@@ -120,7 +119,7 @@ CUPZEUS_grantZeus =
 	switch (_displayMessages) do
 	{
 		case 1: {(format ["Zeus granted%1", _reason]) remoteExec ["systemChat", _unit];};
-		case 2: {(format ["Zeus granted to %1%2", name _unit,_reason]) remoteExec ["systemChat", 0];};
+		case 2: {(format ["Zeus granted to %1%2", name _unit, _reason]) remoteExec ["systemChat", 0];};
 	};
 };
 
@@ -147,6 +146,10 @@ CUPZEUS_assignCurator =
 		_curator setVariable ["Addons", 3, true];
 	};
 	_unit assignCurator _curator;
+	if (!isNil {_unit getVariable "CUPZEUS_curatorObjects"}) then
+	{
+		_curator addCuratorEditableObjects [_unit getVariable "CUPZEUS_curatorObjects"];
+	};
 	_curator
 };
 
@@ -161,16 +164,12 @@ CUPZEUS_denyZeus =
 
 CUPZEUS_handleRelinquish = 
 {
-	//params ["", "_unit"];
 	_unit = _this;
 	private ["_curator"];
 	_curator = getAssignedCuratorLogic _unit;
+	_unit setVariable ["CUPZEUS_curatorObjects", curatorEditableObjects _curator];
 	unassignCurator _curator;
 	_curator call CUPZEUS_attemptModuleDelete;
-	/**
-	CUPZEUS_clientRespawnEH = false;
-	(owner _unit) publicVariableClient "CUPZEUS_clientRespawnEH";
-	**/
 	_unit removeMPEventHandler ["MPRespawn", _unit getVariable "CUPZEUS_respawnEH"];
 	_unit setVariable ["CUPZEUS_respawnEH", nil];
 	switch (CUPZEUS_displayMessages) do
@@ -222,11 +221,11 @@ CUPZEUS_handleAdminResponse =
 
 CUPZEUS_handleRespawnServer = 
 {
-	//systemChat format ["Respawn request received: %1", _this];
 	params ["_unit", "_corpse"];
 	if (!isNil {_corpse getVariable "CUPZEUS_respawnEH"}) then
 	{
-		[_unit] call CUPZEUS_assignCurator;
+		_curator = [_unit] call CUPZEUS_assignCurator;
+		_curator addCuratorEditableObjects [(_corpse getVariable "CUPZEUS_curatorObjects")];
 		_unit setVariable ["CUPZEUS_respawnEH", _corpse getVariable "CUPZEUS_respawnEH"];
 	};
 };

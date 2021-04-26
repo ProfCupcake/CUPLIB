@@ -54,7 +54,7 @@ CUPZEUS_doRequestList =
 
 CUPZEUS_listCondition = 
 {
-	if (CUPZEUS_listTimeout < time) then
+	if (CUPZEUS_listTimeout > time) then
 	{
 		true
 	} else
@@ -105,6 +105,7 @@ CUPZEUS_handleKilled =
 			_curator = getAssignedCuratorLogic _unit;
 			if (_curator in (units CUPZEUS_curatorModuleGroup)) then
 			{
+				_unit setVariable ["CUPZEUS_curatorObjects", curatorEditableObjects _curator];
 				unassignCurator _curator;
 				_curator call CUPZEUS_attemptModuleDelete;
 			};

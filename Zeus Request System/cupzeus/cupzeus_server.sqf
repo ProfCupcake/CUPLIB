@@ -111,11 +111,8 @@ CUPZEUS_grantZeus =
 	params ["_unit", ["_displayMessages", CUPZEUS_displayMessages], ["_reason", ""]];
 	private ["_respawnEH"];
 	[_unit] call CUPZEUS_assignCurator;
+	_unit setVariable ["CUPZEUS_isCurator", true];
 	
-	_respawnEH = _unit addMPEventHandler ["MPRespawn", {
-		_this remoteExec ["CUPZEUS_handleRespawnServer", 2];
-	}];
-	_unit setVariable ["CUPZEUS_respawnEH", _respawnEH];
 	switch (_displayMessages) do
 	{
 		case 1: {(format ["Zeus granted%1", _reason]) remoteExec ["systemChat", _unit];};
@@ -170,8 +167,7 @@ CUPZEUS_handleRelinquish =
 	_unit setVariable ["CUPZEUS_curatorObjects", curatorEditableObjects _curator];
 	unassignCurator _curator;
 	_curator call CUPZEUS_attemptModuleDelete;
-	_unit removeMPEventHandler ["MPRespawn", _unit getVariable "CUPZEUS_respawnEH"];
-	_unit setVariable ["CUPZEUS_respawnEH", nil];
+	_unit setVariable ["CUPZEUS_isCurator", false];
 	switch (CUPZEUS_displayMessages) do
 	{
 		case 1: {"Zeus relinquished" remoteExec ["systemChat", _unit];};
@@ -222,11 +218,16 @@ CUPZEUS_handleAdminResponse =
 CUPZEUS_handleRespawnServer = 
 {
 	params ["_unit", "_corpse"];
-	if (!isNil {_corpse getVariable "CUPZEUS_respawnEH"}) then
+	if (_corpse getVariable "CUPZEUS_isCurator") then
 	{
 		_curator = [_unit] call CUPZEUS_assignCurator;
 		_curator addCuratorEditableObjects [(_corpse getVariable "CUPZEUS_curatorObjects")];
-		_unit setVariable ["CUPZEUS_respawnEH", _corpse getVariable "CUPZEUS_respawnEH"];
+	} else
+	{
+		if (!isNil {_corpse getVariable "CUPZEUS_curatorObjects"}) then
+		{
+			_unit setVariable ["CUPZEUS_curatorObjects", _corpse getVariable "CUPZEUS_curatorObjects"];
+		};
 	};
 };
 

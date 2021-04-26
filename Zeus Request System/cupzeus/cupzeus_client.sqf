@@ -114,3 +114,5 @@ CUPZEUS_handleKilled =
 };
 
 player addMPEventHandler ["MPKilled", CUPZEUS_handleKilled]; 
+
+player addMPEventHandler ["MPRespawn", {_this remoteExec ["CUPZEUS_handleRespawnServer", 2];}];

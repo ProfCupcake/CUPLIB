@@ -112,15 +112,8 @@ CUPZEUS_grantZeus =
 	params ["_unit", ["_displayMessages", CUPZEUS_displayMessages], ["_reason", ""]];
 	private ["_respawnEH"];
 	[_unit] call CUPZEUS_assignCurator;
-	/*
-	CUPZEUS_clientRespawnEH = true;
-	(owner _this) publicVariableClient "CUPZEUS_clientRespawnEH";
-	*/
+	
 	_respawnEH = _unit addMPEventHandler ["MPRespawn", {
-		//systemChat "respawn EH fired";
-		//CUPZEUS_respawnRequest = _this;
-		//publicVariableServer "CUPZEUS_respawnRequest";
-		
 		_this remoteExec ["CUPZEUS_handleRespawnServer", 2];
 	}];
 	_unit setVariable ["CUPZEUS_respawnEH", _respawnEH];
@@ -133,6 +126,7 @@ CUPZEUS_grantZeus =
 
 /**
 Assigns a curator module, creating if necessary, and adds to active group
+Returns assigned curator module
 **/
 CUPZEUS_assignCurator = 
 {
@@ -153,6 +147,7 @@ CUPZEUS_assignCurator =
 		_curator setVariable ["Addons", 3, true];
 	};
 	_unit assignCurator _curator;
+	_curator
 };
 
 CUPZEUS_denyZeus = 
@@ -163,8 +158,6 @@ CUPZEUS_denyZeus =
 		(format ["Zeus denied%1",_reason]) remoteExec ["systemChat", _unit];
 	};
 };
-
-//"CUPZEUS_requestZeus" addPublicVariableEventHandler CUPZEUS_handleRequest;
 
 CUPZEUS_handleRelinquish = 
 {
@@ -187,8 +180,6 @@ CUPZEUS_handleRelinquish =
 	};
 };
 
-//"CUPZEUS_relinquishZeus" addPublicVariableEventHandler CUPZEUS_handleRelinquish;
-
 /**
 Returns the client ID of logged/voted-in admin, or nil if there is no admin
 **/
@@ -210,16 +201,12 @@ CUPZEUS_findAdmin =
 CUPZEUS_sendAdminRequest = 
 {
 	params ["_unit", "_admin"];
-	//CUPZEUS_adminRequest = _unit;
-	//_admin publicVariableClient "CUPZEUS_adminRequest";
 	
 	_unit remoteExec ["CUPZEUS_handleAdminRequest", _admin];
 };
 
 CUPZEUS_handleAdminResponse = 
 {
-	//params ["", "_response"];
-	//_response 
 	params ["_unit", "_grant", "_admin"];
 	if ((admin owner _admin) > 0) then
 	{
@@ -233,28 +220,16 @@ CUPZEUS_handleAdminResponse =
 	};
 };
 
-//"CUPZEUS_adminResponse" addPublicVariableEventHandler CUPZEUS_handleAdminResponse;
-
 CUPZEUS_handleRespawnServer = 
 {
 	//systemChat format ["Respawn request received: %1", _this];
-	//params ["", "_params"];
-	//_params 
 	params ["_unit", "_corpse"];
-	/**
-	private "_curator";
-	_curator = getAssignedCuratorLogic _corpse;
-	unassignCurator _curator; 
-	_unit assignCurator _curator;
-	**/
 	if (!isNil {_corpse getVariable "CUPZEUS_respawnEH"}) then
 	{
 		[_unit] call CUPZEUS_assignCurator;
 		_unit setVariable ["CUPZEUS_respawnEH", _corpse getVariable "CUPZEUS_respawnEH"];
 	};
 };
-
-//"CUPZEUS_respawnRequest" addPublicVariableEventHandler CUPZEUS_handleRespawnServer;
 
 CUPZEUS_handleDisconnect = 
 {
@@ -275,7 +250,6 @@ addMissionEventHandler ["HandleDisconnect", CUPZEUS_handleDisconnect];
 
 CUPZEUS_handleListRequest = 
 {
-	//params ["", "_unit"];
 	_unit = _this; 
 	if ((isNil "CUPZEUS_curatorModuleGroup") or {(count (units CUPZEUS_curatorModuleGroup)) <= 1}) exitWith
 	{
@@ -290,15 +264,12 @@ CUPZEUS_handleListRequest =
 	} forEach (units CUPZEUS_curatorModuleGroup);
 };
 
-//"CUPZEUS_requestList" addPublicVariableEventHandler CUPZEUS_handleListRequest;
-
 /**
-Attempts to delete Zeus module
-If it fails, move Zeus module to inactive group to be re-used later
+"Deactivates" curator module, by moving it to the inactive group so that it may be reused later
+This is because Arma really doesn't like it when you try to delete curator modules. 
 **/
 CUPZEUS_attemptModuleDelete = 
 {
-	//deleteVehicle _this; // commented out, because it's probably better to just never bother trying to delete them, tbh
 	if !(isNull _this) then
 	{
 		if (isNil "CUPZEUS_inactiveModuleGroup") then

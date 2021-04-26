@@ -14,17 +14,12 @@ CUPZEUS_listTimeout = 0;
 
 CUPZEUS_doRequestZeus = 
 {
-	//CUPZEUS_requestZeus = player;
-	//publicVariableServer "CUPZEUS_requestZeus";
 	player remoteExec ["CUPZEUS_handleRequest", 2];
 	CUPZEUS_requestTimeout = time + CUPZEUS_requestDelay;
 };
 
 CUPZEUS_doRelinquishZeus = 
 {
-	//CUPZEUS_relinquishZeus = player;
-	//publicVariableServer "CUPZEUS_relinquishZeus";
-	
 	player remoteExec ["CUPZEUS_handleRelinquish", 2];
 };
 
@@ -53,8 +48,6 @@ CUPZEUS_addRequestAction =
 
 CUPZEUS_doRequestList = 
 {
-	//CUPZEUS_requestList = player;
-	//publicVariableServer "CUPZEUS_requestList";
 	player remoteExec ["CUPZEUS_handleListRequest", 2];
 	CUPZEUS_listTimeout = time + CUPZEUS_listDelay;
 };
@@ -80,8 +73,6 @@ CUPZEUS_sendAdminResponse =
 {
 	params ["", "", "", "_response"];
 	_response params ["_unit", "_grant"];
-	//CUPZEUS_adminResponse = [_unit, _grant, player];
-	//publicVariableServer "CUPZEUS_adminResponse";
 	[_unit, _grant, player] remoteExec ["CUPZEUS_handleAdminResponse", 2];
 	player removeAction (CUPZEUS_actionMapGrant get (str _unit));
 	player removeAction (CUPZEUS_actionMapDeny get (str _unit));
@@ -89,7 +80,6 @@ CUPZEUS_sendAdminResponse =
 
 CUPZEUS_handleAdminRequest = 
 {
-	//params ["", "_unit"];
 	_unit = _this;
 	if (isNil "CUPZEUS_actionMapGrant") then
 	{
@@ -104,11 +94,8 @@ CUPZEUS_handleAdminRequest =
 	};
 };
 
-//"CUPZEUS_adminRequest" addPublicVariableEventHandler CUPZEUS_handleAdminRequest;
-
 CUPZEUS_handleKilled = 
 {
-	//systemChat "MPKilled fired";
 	if (isServer) then
 	{
 		params ["_unit"];

@@ -32,6 +32,8 @@ CUPZEUS_curatorLimit = 0;
 //END OF PARAMETERS
 /////////////////////////////////////////////////////////////////////
 
+CUPZEUS_curatorObjectsUIDMap = createHashMap;
+
 // Checks given list for the given unit/player in the following formats:-
 // - raw variable
 // - variable name as a string
@@ -146,6 +148,13 @@ CUPZEUS_assignCurator =
 	if (!isNil {_unit getVariable "CUPZEUS_curatorObjects"}) then
 	{
 		_curator addCuratorEditableObjects [_unit getVariable "CUPZEUS_curatorObjects"];
+	} else
+	{
+		if (!isNil {CUPZEUS_curatorObjectsUIDMap get (getPlayerUID _unit)}) then
+		{
+			_curator addCuratorEditableObjects [CUPZEUS_curatorObjectsUIDMap get (getPlayerUID _unit)];
+			CUPZEUS_curatorObjectsUIDMap set [getPlayerUID _unit, nil];
+		};
 	};
 	_curator
 };
@@ -240,9 +249,14 @@ CUPZEUS_handleDisconnect =
 		{
 			private "_curator";
 			_curator = getAssignedCuratorLogic _unit;
+			_unit setVariable ["CUPZEUS_curatorObjects", curatorEditableObjects _curator];
 			unassignCurator _curator;
 			_curator call CUPZEUS_attemptModuleDelete;
 		};
+	};
+	if (!isNil {_unit getVariable "CUPZEUS_curatorObjects"}) then
+	{
+		CUPZEUS_curatorObjectsUIDMap set [_uid, _unit getVariable "CUPZEUS_curatorObjects"];
 	};
 };
 

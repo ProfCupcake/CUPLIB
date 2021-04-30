@@ -1,4 +1,7 @@
 /**
+WARNING: THIS SCRIPT IS DEPRECATED AND ALSO REALLY REALLY BAD
+Just put "RespawnOnStart = -1" in your description.ext to get basically the same thing
+
 Script designed for very specific circumstances...
 Will allow players to spawn in your normal start position for first spawn, then delete that spawn and set it to a second spawn. 
 The intention is that the second spawn is in a holding area or other such place that you want players to spawn at, but not start in. 

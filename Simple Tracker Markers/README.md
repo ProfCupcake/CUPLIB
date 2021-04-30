@@ -1,3 +1,5 @@
+This script is deprecated - you probably want the [newer one](https://github.com/ProfCupcake/CUPLIB/tree/master/Simple%20Tracker%20Markers%20v2). 
+
 # Dead Simple Tracker Marker Script
 
 This script provides an easy solution to tracking units via regularly (but not necessarily often) updating markers. 

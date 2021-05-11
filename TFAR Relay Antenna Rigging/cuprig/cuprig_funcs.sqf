@@ -36,6 +36,7 @@ CUPRIG_doDisableAntenna =
 	remoteExec ["", _target getVariable "CUPRIG_jipID"];
 	_target setVariable ["CUPRIG_rigged", false, true];
 	_target removeMPEventHandler ["MPKilled", (_target getVariable "CUPRIG_killedEH")];
+	hint "Antenna disabled.";
 };
 
 CUPRIG_canDisableAntenna = 

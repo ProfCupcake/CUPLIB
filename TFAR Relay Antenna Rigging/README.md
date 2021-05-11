@@ -6,6 +6,8 @@ This requires the TFAR beta build.
 
 It will add a hold-action to all antennae on the map, requiring some amount of time to rig up the antenna. After using this action, the antenna is considered "rigged", and can be enabled/disabled at will. 
 
+Note that some larger antenna may require you to climb up them a bit before you count as close enough to access their actions. This wasn't intentional, but is a nice little sorta immersive part of the script, so it's staying that way. 
+
 ## Installation
 
 Add it to your mission by copying the "cuprig" folder, and running the following on mission start on the server (e.g. in `initServer.sqf`, or inside an `isServer` block in `init.sqf`):

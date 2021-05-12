@@ -1,0 +1,17 @@
+class CfgFunctions
+{
+	#include "chatcom\functions.hpp"
+};
+
+class rwt_chatcom
+{
+	specialchar = "!";
+	
+	class commands
+	{
+		class test
+		{
+			code = "systemChat 'Test command. Parameters:-'; {systemChat _x} forEach _this;";
+		};
+	};
+};

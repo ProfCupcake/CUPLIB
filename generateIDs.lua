@@ -79,6 +79,7 @@ end
 
 nameString = table.concat(nameList, ";")
 nameString = unescape(nameString);
+nameString = string.gsub(nameString, ":","-") -- Arma's Workshop folder names replace colons with hyphens
 
 idString = table.concat(idList, ",")
 
